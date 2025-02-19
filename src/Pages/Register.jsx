@@ -6,7 +6,6 @@ import Input from "../Common Component/Input";
 import inputData from "../lib/inputData";
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
-  // const handleInput = (e) => {};
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
   };

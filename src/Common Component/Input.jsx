@@ -10,6 +10,19 @@ const Input = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isFilled, setIsFilled] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const handleInput = (e) => {
+    setIsFilled(e.target.value);
+    if (labelFor === "name") {
+      setName(e.target.value);
+    } else if (labelFor === "email") {
+      setEmail(e.target.value);
+    } else if (labelFor === "password") {
+      setPassword(e.target.value);
+    }
+  };
   return (
     <div className={`relative ${className}`}>
       <label
@@ -28,7 +41,7 @@ const Input = ({
         value={isFilled}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        onChange={(e) => setIsFilled(e.target.value)}
+        onChange={handleInput}
         className="px-11 py-5 border border-dark-blue border-opacity-30 rounded-lg text-dark-blue w-full"
       />
       {children && (
