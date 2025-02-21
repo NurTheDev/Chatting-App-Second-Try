@@ -1,9 +1,12 @@
 import { FcGoogle } from "react-icons/fc";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { Link } from "react-router-dom";
+import Button from "../Common Component/Button";
 import Input from "../Common Component/Input";
+import loginBanner from "../assets/LoginBanner.png";
 import inputData, { useTogglePasswordVisibility } from "../lib/inputData";
 const Login = () => {
-  const { showPassword, toggleShowPassword } = useTogglePasswordVisibility;
+  const { showPassword, toggleShowPassword } = useTogglePasswordVisibility();
   return (
     <div>
       <div className="container">
@@ -30,6 +33,9 @@ const Login = () => {
                           labelFor={data.labelFor}
                           labelValue={data.labelValue}
                           inputType={showPassword ? "text" : data.inputType}
+                          className={
+                            "py-5 border-b border-dark-blue border-opacity-30 text-dark-blue w-full"
+                          }
                         >
                           {showPassword ? (
                             <IoMdEyeOff onClick={toggleShowPassword} />
@@ -53,7 +59,25 @@ const Login = () => {
                   )}
                 </div>
               ))}
+              <Button
+                btnContent={"Login to Continue"}
+                className={"w-full rounded-lg mt-10"}
+              />
             </form>
+            <p className="text-sm text-dark-blue font-openSans text-center mt-10">
+              Don&apos;t have an account ?
+              <span
+                onClick="/login"
+                className="text-[#EA6C00] font-bold cursor-pointer hover:text-primary-purple transition-all duration-100"
+              >
+                <Link to="/">Sign In</Link>
+              </span>
+            </p>
+          </div>
+          <div className="h-full overflow-hidden">
+            <picture>
+              <img src={loginBanner} alt="" className="object-cover" />
+            </picture>
           </div>
         </div>
       </div>

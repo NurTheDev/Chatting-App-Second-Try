@@ -6,7 +6,7 @@ import Input from "../Common Component/Input";
 import inputData, { useTogglePasswordVisibility } from "../lib/inputData";
 
 const Register = () => {
-  const { showPassword, toggleShowPassword } = useTogglePasswordVisibility;
+  const { showPassword, toggleShowPassword } = useTogglePasswordVisibility();
 
   return (
     <div>

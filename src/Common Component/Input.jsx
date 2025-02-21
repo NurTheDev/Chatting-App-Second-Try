@@ -23,6 +23,8 @@ const Input = ({
       setPassword(e.target.value);
     }
   };
+  console.log(name, email, password);
+
   return (
     <div className={`relative mb-10`}>
       <label
