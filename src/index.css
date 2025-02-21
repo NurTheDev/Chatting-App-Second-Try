@@ -4,6 +4,7 @@
 :root {
   --primary-purple: #5f35f5; /* Vibrant Purple */
   --dark-blue: #11175d; /* Dark Blue */
+  --dark-blue-v2: #03014c; /* Dark Blue v2 */
   --black: #000000; /* Pure Black */
   --white: #ffffff; /* Pure White */
   --black-25: rgba(0, 0, 0, 0.25); /* Black 25% */
@@ -38,6 +39,7 @@
   --color-gray-medium: var(--gray-medium);
   --color-gray-medium-35: var(--gray-medium-35);
   --color-soft-purple: var(--soft-purple);
+  --color-dark-blue-v2: var(--dark-blue-v2);
   /* Font */
   --font-poppins: "Poppins", sans-serif;
   --font-nunito: "Nunito", sans-serif;

@@ -24,7 +24,7 @@ const Input = ({
     }
   };
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative mb-10`}>
       <label
         htmlFor={labelFor}
         className={`absolute top-4 left-10 text-dark-blue ${
@@ -42,7 +42,7 @@ const Input = ({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         onChange={handleInput}
-        className="px-11 py-5 border border-dark-blue border-opacity-30 rounded-lg text-dark-blue w-full"
+        className={className}
       />
       {children && (
         <div className="absolute top-5 right-5 text-2xl cursor-pointer">

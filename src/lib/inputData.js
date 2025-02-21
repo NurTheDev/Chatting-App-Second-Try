@@ -1,3 +1,4 @@
+import { useState } from "react";
 const inputData = [
   {
     id: 1,
@@ -18,4 +19,12 @@ const inputData = [
     inputType: "password",
   },
 ];
+
 export default inputData;
+export const useTogglePasswordVisibility = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+  return { showPassword, toggleShowPassword };
+};

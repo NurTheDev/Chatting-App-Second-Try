@@ -1,14 +1,13 @@
-import { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { Link } from "react-router-dom";
 import registrationImg from "../assets/registrationBanner.png";
 import Button from "../Common Component/Button";
 import Input from "../Common Component/Input";
-import inputData from "../lib/inputData";
+import inputData, { useTogglePasswordVisibility } from "../lib/inputData";
+
 const Register = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const { showPassword, toggleShowPassword } = useTogglePasswordVisibility;
+
   return (
     <div>
       <div className="container">
@@ -26,40 +25,40 @@ const Register = () => {
               {inputData.map((data) => (
                 <div key={data.id}>
                   {data.inputType === "password" ? (
-                    <div>
-                      <Input
-                        labelFor={data.labelFor}
-                        labelValue={data.labelValue}
-                        inputType={showPassword ? "text" : data.inputType}
-                        className="mb-10"
-                      >
-                        {showPassword ? (
-                          <IoMdEye onClick={toggleShowPassword} />
-                        ) : (
-                          <IoMdEyeOff onClick={toggleShowPassword} />
-                        )}
-                      </Input>
-                    </div>
+                    <Input
+                      labelFor={data.labelFor}
+                      labelValue={data.labelValue}
+                      inputType={showPassword ? "text" : data.inputType}
+                      className="px-11 py-5 border border-dark-blue border-opacity-30 rounded-lg text-dark-blue w-full"
+                    >
+                      {showPassword ? (
+                        <IoMdEyeOff onClick={toggleShowPassword} />
+                      ) : (
+                        <IoMdEye onClick={toggleShowPassword} />
+                      )}
+                    </Input>
                   ) : (
                     <Input
                       labelFor={data.labelFor}
                       labelValue={data.labelValue}
                       inputType={data.inputType}
-                      className="mb-10"
+                      className="px-11 py-5 border border-dark-blue border-opacity-30 rounded-lg text-dark-blue w-full"
                     />
                   )}
                 </div>
               ))}
-
               <Button
                 btnContent={"Sign up"}
                 className={"w-full rounded-[86px]"}
               />
             </form>
-            <p className="text-sm text-dark-blue </p>font-openSans text-center">
+            <p className="text-sm text-dark-blue font-openSans text-center">
               Already have an account ?{" "}
-              <span className="text-[#EA6C00] font-bold cursor-pointer hover:text-primary-purple transition-all duration-100">
-                Sign In
+              <span
+                onClick="/login"
+                className="text-[#EA6C00] font-bold cursor-pointer hover:text-primary-purple transition-all duration-100"
+              >
+                <Link to="/login">Sign In</Link>
               </span>
             </p>
           </div>

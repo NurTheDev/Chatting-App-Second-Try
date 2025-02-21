@@ -1,16 +1,15 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
-
 const App = () => {
+  const router = createBrowserRouter([
+    { path: "/", element: <Register /> },
+    { path: "/login", element: <Login /> },
+  ]);
   return (
     <>
-      <Router>
-        <Routes>
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-      </Router>
+      {/* <Register /> */}
+      <RouterProvider router={router} />
     </>
   );
 };
