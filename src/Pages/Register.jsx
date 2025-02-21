@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IoMdEye } from "react-icons/io";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import registrationImg from "../assets/registrationBanner.png";
 import Button from "../Common Component/Button";
 import Input from "../Common Component/Input";
@@ -12,7 +12,7 @@ const Register = () => {
   return (
     <div>
       <div className="container">
-        <div className="flex justify-between items-center h-screen">
+        <div className="flexRowBetween h-screen">
           <div className="flex flex-col space-y-14 justify-center h-screen w-1/2 px-40">
             <div>
               <h1 className="text-dark-blue text-4xl font-bold font-nunito lead">
@@ -33,7 +33,11 @@ const Register = () => {
                         inputType={showPassword ? "text" : data.inputType}
                         className="mb-10"
                       >
-                        <IoMdEye onClick={toggleShowPassword} />
+                        {showPassword ? (
+                          <IoMdEye onClick={toggleShowPassword} />
+                        ) : (
+                          <IoMdEyeOff onClick={toggleShowPassword} />
+                        )}
                       </Input>
                     </div>
                   ) : (
