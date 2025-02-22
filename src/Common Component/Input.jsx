@@ -28,8 +28,8 @@ const Input = ({
         id={labelFor}
         value={inputValue}
         onFocus={() => setIsFocused(true)}
-        onBlur={() => {
-          !inputValue && setIsFocused(false);
+        onBlur={(e) => {
+          if (!e.target.value) setIsFocused(false);
         }}
         onChange={onChange}
         className={className}
