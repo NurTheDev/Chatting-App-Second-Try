@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Link } from "react-router-dom";
 import registrationImg from "../assets/registrationBanner.png";
@@ -7,6 +8,36 @@ import inputData, { useTogglePasswordVisibility } from "../lib/inputData";
 
 const Register = () => {
   const { showPassword, toggleShowPassword } = useTogglePasswordVisibility();
+  const [formValues, setFormValues] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
+
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [id]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newErrors = {};
+    Object.keys(formValues).forEach((key) => {
+      if (!formValues[key]) {
+        newErrors[key] = "This field must be filled";
+      }
+    });
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      // Submit the form
+      console.log("Form submitted", formValues);
+    }
+  };
 
   return (
     <div>
@@ -21,30 +52,29 @@ const Register = () => {
                 Free register and you can enjoy it
               </p>
             </div>
-            <form className="w-full">
+            <form className="w-full" onSubmit={handleSubmit}>
               {inputData.map((data) => (
                 <div key={data.id}>
-                  {data.inputType === "password" ? (
-                    <Input
-                      labelFor={data.labelFor}
-                      labelValue={data.labelValue}
-                      inputType={showPassword ? "text" : data.inputType}
-                      className="px-11 py-5 border border-dark-blue border-opacity-30 rounded-lg text-dark-blue w-full"
-                    >
-                      {showPassword ? (
+                  <Input
+                    labelFor={data.labelFor}
+                    labelValue={data.labelValue}
+                    inputType={
+                      data.inputType === "password" && showPassword
+                        ? "text"
+                        : data.inputType
+                    }
+                    className="px-11 py-5 border border-dark-blue border-opacity-30 rounded-lg text-dark-blue w-full"
+                    value={formValues[data.labelFor]}
+                    onChange={handleInputChange}
+                    errorMessage={errors[data.labelFor]}
+                  >
+                    {data.inputType === "password" &&
+                      (showPassword ? (
                         <IoMdEyeOff onClick={toggleShowPassword} />
                       ) : (
                         <IoMdEye onClick={toggleShowPassword} />
-                      )}
-                    </Input>
-                  ) : (
-                    <Input
-                      labelFor={data.labelFor}
-                      labelValue={data.labelValue}
-                      inputType={data.inputType}
-                      className="px-11 py-5 border border-dark-blue border-opacity-30 rounded-lg text-dark-blue w-full"
-                    />
-                  )}
+                      ))}
+                  </Input>
                 </div>
               ))}
               <Button
@@ -54,10 +84,7 @@ const Register = () => {
             </form>
             <p className="text-sm text-dark-blue font-openSans text-center">
               Already have an account ?{" "}
-              <span
-                onClick="/login"
-                className="text-[#EA6C00] font-bold cursor-pointer hover:text-primary-purple transition-all duration-100"
-              >
+              <span className="text-[#EA6C00] font-bold cursor-pointer hover:text-primary-purple transition-all duration-100">
                 <Link to="/login">Sign In</Link>
               </span>
             </p>

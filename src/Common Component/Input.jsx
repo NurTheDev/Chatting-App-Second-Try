@@ -6,31 +6,17 @@ const Input = ({
   inputType,
   className,
   children,
-  // inputValue
+  inputValue,
+  onChange,
+  errorMessage,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [isFilled, setIsFilled] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const handleInput = (e) => {
-    setIsFilled(e.target.value);
-    if (labelFor === "name") {
-      setName(e.target.value);
-    } else if (labelFor === "email") {
-      setEmail(e.target.value);
-    } else if (labelFor === "password") {
-      setPassword(e.target.value);
-    }
-  };
-  console.log(name, email, password);
-
   return (
     <div className={`relative mb-10`}>
       <label
         htmlFor={labelFor}
         className={`absolute top-4 left-10 text-dark-blue ${
-          isFocused || isFilled
+          isFocused || inputValue
             ? "-translate-y-6 bg-white z-10 text-sm"
             : "text-xl "
         } transition-all duration-300`}
@@ -40,16 +26,21 @@ const Input = ({
       <input
         type={inputType}
         id={labelFor}
-        value={isFilled}
+        value={inputValue}
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        onChange={handleInput}
+        onBlur={() => {
+          !inputValue && setIsFocused(false);
+        }}
+        onChange={onChange}
         className={className}
       />
       {children && (
         <div className="absolute top-5 right-5 text-2xl cursor-pointer">
           {children}
         </div>
+      )}
+      {errorMessage && (
+        <span className="text-red-500 text-sm mt-1">{errorMessage}</span>
       )}
     </div>
   );
@@ -60,5 +51,8 @@ Input.propTypes = {
   inputType: propTypes.string.isRequired,
   className: propTypes.string,
   children: propTypes.node,
+  inputValue: propTypes.string,
+  onChange: propTypes.func,
+  errorMessage: propTypes.string,
 };
 export default Input;

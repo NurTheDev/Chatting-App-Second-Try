@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Link } from "react-router-dom";
@@ -7,6 +8,31 @@ import loginBanner from "../assets/LoginBanner.png";
 import inputData, { useTogglePasswordVisibility } from "../lib/inputData";
 const Login = () => {
   const { showPassword, toggleShowPassword } = useTogglePasswordVisibility();
+  const [formValues, setFormValues] = useState({
+    email: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({});
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [id]: value,
+    }));
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newError = {};
+    Object.keys(formValues).forEach((key) => {
+      if (!formValues[key]) {
+        newError[key] = "This field must be filled";
+      }
+    });
+    setErrors(newError);
+    if (Object.keys(newError).length === 0) {
+      console.log("Form submitted", formValues);
+    }
+  };
   return (
     <div>
       <div className="container">
@@ -23,7 +49,7 @@ const Login = () => {
                 Login with Google
               </p>
             </div>
-            <form className="w-full mt-10">
+            <form className="w-full mt-10" onSubmit={handleSubmit}>
               {inputData.map((data) => (
                 <div key={data.id}>
                   {data.labelFor === "password" || data.labelFor === "email" ? (
@@ -33,6 +59,9 @@ const Login = () => {
                           labelFor={data.labelFor}
                           labelValue={data.labelValue}
                           inputType={showPassword ? "text" : data.inputType}
+                          value={formValues[data.labelFor]}
+                          onChange={handleInputChange}
+                          errorMessage={errors[data.labelFor]}
                           className={
                             "py-5 border-b border-dark-blue border-opacity-30 text-dark-blue w-full"
                           }
@@ -48,6 +77,9 @@ const Login = () => {
                           labelFor={data.labelFor}
                           labelValue={data.labelValue}
                           inputType={data.inputType}
+                          value={formValues[data.labelFor]}
+                          onChange={handleInputChange}
+                          errorMessage={errors[data.labelFor]}
                           className={
                             "py-5 border-b border-dark-blue border-opacity-30 text-dark-blue w-full"
                           }
@@ -66,10 +98,7 @@ const Login = () => {
             </form>
             <p className="text-sm text-dark-blue font-openSans text-center mt-10">
               Don&apos;t have an account ?
-              <span
-                onClick="/login"
-                className="text-[#EA6C00] font-bold cursor-pointer hover:text-primary-purple transition-all duration-100"
-              >
+              <span className="text-[#EA6C00] font-bold cursor-pointer hover:text-primary-purple transition-all duration-100">
                 <Link to="/">Sign In</Link>
               </span>
             </p>
