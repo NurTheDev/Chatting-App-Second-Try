@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   getAuth,
+  sendEmailVerification,
   updateProfile,
 } from "firebase/auth";
 import { useState } from "react";
@@ -53,7 +54,11 @@ const Register = () => {
           updateProfile(user, {
             displayName: formValues.name,
           });
+          return user;
           // ...
+        })
+        .then((user) => {
+          sendEmailVerification(user);
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -74,7 +79,7 @@ const Register = () => {
         });
     }
   };
-
+  console.log(auth.currentUser);
   return (
     <div>
       <div className="container">
