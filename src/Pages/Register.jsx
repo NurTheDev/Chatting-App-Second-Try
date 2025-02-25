@@ -1,3 +1,8 @@
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  updateProfile,
+} from "firebase/auth";
 import { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Link } from "react-router-dom";
@@ -7,6 +12,7 @@ import Input from "../Common Component/Input";
 import inputData, { useTogglePasswordVisibility } from "../lib/inputData";
 
 const Register = () => {
+  const auth = getAuth();
   const { showPassword, toggleShowPassword } = useTogglePasswordVisibility();
   const [formValues, setFormValues] = useState({
     name: "",
@@ -35,7 +41,37 @@ const Register = () => {
 
     if (Object.keys(newErrors).length === 0) {
       // Submit the form
-      console.log("Form submitted", formValues);
+      createUserWithEmailAndPassword(
+        auth,
+        formValues.email,
+        formValues.password
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(userCredential, user);
+          updateProfile(user, {
+            displayName: formValues.name,
+          });
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode, errorMessage);
+
+          if (errorCode.includes("password")) {
+            setErrors({
+              password: errorMessage,
+            });
+          }
+          if (errorCode.includes("email")) {
+            setErrors({
+              email: errorMessage,
+            });
+          }
+          // ..
+        });
     }
   };
 

@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
+import Database from "./Database/firebase.config.js"
 const App = () => {
   const router = createBrowserRouter([
     { path: "/", element: <Register /> },

@@ -1,3 +1,5 @@
+// import { initializeApp } from "firebase/app";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
@@ -7,6 +9,12 @@ import Input from "../Common Component/Input";
 import loginBanner from "../assets/LoginBanner.png";
 import inputData, { useTogglePasswordVisibility } from "../lib/inputData";
 const Login = () => {
+  // Initialize Firebase
+  // const app = initializeApp(firebaseConfig);
+
+  // Initialize Firebase Authentication and get a reference to the service
+  const auth = getAuth();
+
   const { showPassword, toggleShowPassword } = useTogglePasswordVisibility();
   const [formValues, setFormValues] = useState({
     email: "",
@@ -26,11 +34,36 @@ const Login = () => {
     Object.keys(formValues).forEach((key) => {
       if (!formValues[key]) {
         newError[key] = "This field must be filled";
+      } else if (
+        key === "email" &&
+        !/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(formValues[key])
+      ) {
+        newError[key] = "Invalid email address";
       }
     });
+
     setErrors(newError);
     if (Object.keys(newError).length === 0) {
-      console.log("Form submitted", formValues);
+      // console.log("Form submitted", formValues);
+      createUserWithEmailAndPassword(
+        auth,
+        formValues.email,
+        formValues.password
+      )
+        .then((userCredential) => {
+          // Signed in
+          // const user = userCredential.user;
+          console.log(userCredential);
+
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode, errorMessage);
+
+          // ..
+        });
     }
   };
   return (
@@ -41,7 +74,7 @@ const Login = () => {
             <h1 className="text-dark-blue text-4xl font-bold font-nunito lead">
               Login to your account!
             </h1>
-            <div className="flexRowCenter gap-x-[10px] py-6 px-11 border border-dark-blue-v2 rounded-lg border-opacity-30 mt-8">
+            <div className="flexRowCenter cursor-pointer hover:scale-95 transition-all duration-100 gap-x-[10px] py-6 px-11 border border-dark-blue-v2 rounded-lg border-opacity-30 mt-8">
               <span className="text-2xl">
                 <FcGoogle />
               </span>
