@@ -14,6 +14,7 @@ const Login = () => {
 
   // Initialize Firebase Authentication and get a reference to the service
   const auth = getAuth();
+  console.log(auth);
 
   const { showPassword, toggleShowPassword } = useTogglePasswordVisibility();
   const [formValues, setFormValues] = useState({
