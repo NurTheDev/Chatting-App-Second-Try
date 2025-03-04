@@ -4,6 +4,7 @@ import {
   sendEmailVerification,
   updateProfile,
 } from "firebase/auth";
+import { getDatabase, ref, set } from "firebase/database";
 import { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Link } from "react-router-dom";
@@ -53,7 +54,6 @@ const Register = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          console.log(userCredential, user);
           updateProfile(user, {
             displayName: formValues.name,
           });
@@ -77,6 +77,18 @@ const Register = () => {
           );
 
           sendEmailVerification(user);
+        })
+        .then(() => {
+          const db = getDatabase();
+          const userId = auth.currentUser.uid;
+          const name = formValues.name;
+          const email = auth.currentUser.email;
+          const imageUrl = auth.currentUser.photoURL;
+          set(ref(db, "users/" + userId), {
+            username: name,
+            email: email,
+            profile_picture: imageUrl,
+          });
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -106,7 +118,7 @@ const Register = () => {
         });
     }
   };
-  console.log(auth.currentUser);
+
   return (
     <>
       {/* <!-- Register Section --> */}

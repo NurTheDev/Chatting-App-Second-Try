@@ -1,9 +1,17 @@
 // import { initializeApp } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
+import { getDatabase, ref, set } from "firebase/database";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Link } from "react-router-dom";
+import { ScaleLoader } from "react-spinners";
+import { Flip, toast } from "react-toastify";
 import Button from "../Common Component/Button";
 import Input from "../Common Component/Input";
 import loginBanner from "../assets/LoginBanner.png";
@@ -14,13 +22,36 @@ const Login = () => {
 
   // Initialize Firebase Authentication and get a reference to the service
   const auth = getAuth();
-  console.log(auth);
 
   const { showPassword, toggleShowPassword } = useTogglePasswordVisibility();
+  const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState({
     email: "",
     password: "",
   });
+  const googleSignIn = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        const user = result.user;
+        console.log(token);
+        const db = getDatabase();
+        set(ref(db, "users" + user.uid), {
+          username: user.displayName,
+          email: user.email,
+          profile_picture: user.photoURL,
+        });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        const email = error.customData.email;
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        console.log(errorCode, errorMessage, email, credential);
+      });
+  };
   const [errors, setErrors] = useState({});
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -45,31 +76,57 @@ const Login = () => {
 
     setErrors(newError);
     if (Object.keys(newError).length === 0) {
-      // console.log("Form submitted", formValues);
-      createUserWithEmailAndPassword(
-        auth,
-        formValues.email,
-        formValues.password
-      )
+      setLoading(true);
+      const { email, password } = formValues;
+      signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           // Signed in
-          // const user = userCredential.user;
-          console.log(userCredential);
-
+          const user = userCredential.user;
+          console.log(user);
           // ...
+          setLoading(false);
+          return user;
+        })
+        .then((user) => {
+          toast.success(
+            `${user.displayName} welcome to your account`,
+            {
+              position: "bottom-center",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Flip,
+            }
+          );
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorCode, errorMessage);
-
-          // ..
+          setLoading(false);
         });
     }
   };
   return (
-    <div>
-      <div className="container">
+    <>
+      {/* <!-- Register Section --> */}
+      {loading && (
+        <ScaleLoader
+          color="#5f35f5"
+          height={55}
+          loading
+          margin={5}
+          radius={50}
+          speedMultiplier={2}
+          width={20}
+          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 "
+        />
+      )}
+      <div className={`container ${loading ? "opacity-30" : "opacity-100"}`}>
         <div className="flexRowBetween h-screen">
           <div className="flex items-start flex-col">
             <h1 className="text-dark-blue text-4xl font-bold font-nunito lead">
@@ -79,9 +136,12 @@ const Login = () => {
               <span className="text-2xl">
                 <FcGoogle />
               </span>
-              <p className="text-base font-openSans text-dark-blue-v2 font-semibold">
+              <button
+                onClick={googleSignIn}
+                className="text-base font-openSans text-dark-blue-v2 font-semibold"
+              >
                 Login with Google
-              </p>
+              </button>
             </div>
             <form className="w-full mt-10" onSubmit={handleSubmit}>
               {inputData.map((data) => (
@@ -93,7 +153,7 @@ const Login = () => {
                           labelFor={data.labelFor}
                           labelValue={data.labelValue}
                           inputType={showPassword ? "text" : data.inputType}
-                          value={formValues[data.labelFor]}
+                          inputValue={formValues[data.labelFor]}
                           onChange={handleInputChange}
                           errorMessage={errors[data.labelFor]}
                           className={
@@ -111,7 +171,7 @@ const Login = () => {
                           labelFor={data.labelFor}
                           labelValue={data.labelValue}
                           inputType={data.inputType}
-                          value={formValues[data.labelFor]}
+                          inputValue={formValues[data.labelFor]}
                           onChange={handleInputChange}
                           errorMessage={errors[data.labelFor]}
                           className={
@@ -144,7 +204,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
