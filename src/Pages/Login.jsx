@@ -1,3 +1,4 @@
+import React from "react";
 // import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -88,20 +89,17 @@ const Login = () => {
           return user;
         })
         .then((user) => {
-          toast.success(
-            `${user.displayName} welcome to your account`,
-            {
-              position: "bottom-center",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "colored",
-              transition: Flip,
-            }
-          );
+          toast.success(`${user.displayName} welcome to your account`, {
+            position: "bottom-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Flip,
+          });
         })
         .catch((error) => {
           const errorCode = error.code;

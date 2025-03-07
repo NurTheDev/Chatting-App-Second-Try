@@ -5,7 +5,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
-import { useState } from "react";
+import React, { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { ScaleLoader } from "react-spinners";
