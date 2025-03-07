@@ -1,12 +1,10 @@
 import React from "react";
-import Sidebar from "../Common Component/Sidebar";
+
 const Home = () => {
   return (
-    <>
-      <Sidebar>
-        <h1>Home</h1>
-      </Sidebar>
-    </>
+    <div>
+      <h1 className="bg-amber-300">hi</h1>
+    </div>
   );
 };
 

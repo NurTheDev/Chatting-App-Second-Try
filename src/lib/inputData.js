@@ -19,7 +19,6 @@ const inputData = [
     inputType: "password",
   },
 ];
-
 export default inputData;
 export const useTogglePasswordVisibility = () => {
   const [showPassword, setShowPassword] = useState(false);

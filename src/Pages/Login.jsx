@@ -191,7 +191,7 @@ const Login = () => {
             <p className="text-sm text-dark-blue font-openSans text-center mt-10">
               Don&apos;t have an account ?
               <span className="text-[#EA6C00] font-bold cursor-pointer hover:text-primary-purple transition-all duration-100">
-                <Link to="/">Sign In</Link>
+                <Link to="/register">Sign In</Link>
               </span>
             </p>
           </div>
