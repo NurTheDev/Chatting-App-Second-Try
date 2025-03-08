@@ -3,7 +3,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { IoHomeOutline, IoSettingsOutline } from "react-icons/io5";
 import { MdLogout, MdOutlineMessage } from "react-icons/md";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import avatar from "../assets/avatar.gif"
+import avatar from "../assets/avatar.gif";
 const navItems = [
   { id: 1, name: "Home", link: "/home", icon: <IoHomeOutline /> },
   { id: 2, name: "Messages", link: "/messages", icon: <MdOutlineMessage /> },
@@ -19,8 +19,8 @@ const navItems = [
 const Sidebar = () => {
   const location = useLocation();
   return (
-    <div className="grid grid-cols-12 py-9 px-8 h-screen">
-      <div className="col-span-2 w-8/12 bg-primary-purple rounded-[20px] py-10 flex flex-col items-center justify-between">
+    <div className="grid grid-cols-12 py-9 px-8 h-screen w-full">
+      <div className="col-span-1  bg-primary-purple rounded-[20px] py-10 flex flex-col items-center justify-between">
         <div className="object-contain rounded-full">
           <picture>
             <img
@@ -51,6 +51,7 @@ const Sidebar = () => {
           <MdLogout />
         </Link>
       </div>
+      <div className="col-span-1"></div>
       <div className="col-span-10">
         <Outlet />
       </div>

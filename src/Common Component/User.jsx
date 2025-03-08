@@ -4,7 +4,7 @@ import React from "react";
 const User = ({ img, name, message, button, time, className }) => {
   return (
     <div
-      className={`flex justify-between mx-5 items-center gap-4 font-poppins py-4  ${className}`}
+      className={`flex justify-between mx-5 items-center gap-4 font-poppins py-4  cursor-pointer hover:shadow-md ${className}`}
     >
       <div className="flex gap-4 items-center">
         <div>
@@ -12,13 +12,17 @@ const User = ({ img, name, message, button, time, className }) => {
         </div>
         <div className="flex flex-col ">
           <h3 className="text-lg font-semibold ">{name}</h3>
-          <p className="text-sm text-gray-dark">{message}</p>
+          {time && message || message && button ? (
+            <p className="text-sm text-gray-dark">{message}</p>
+          ) : (
+            <p className="text-sm text-gray-dark">{time}</p>
+          )}
         </div>
       </div>
-      {time ? (
+      {time  ? (
         <p className="text-sm text-gray-dark">{time}</p>
       ) : (
-        <button className="text-white p-2 bg-primary-purple text-xl font-semibold rounded-md min-w-12 ">
+        <button className="text-white p-2 bg-primary-purple text-xl font-semibold rounded-md min-w-12 hover:scale-95 transition-all duration-200">
           {button}
         </button>
       )}

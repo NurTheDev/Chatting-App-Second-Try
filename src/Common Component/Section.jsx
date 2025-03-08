@@ -5,7 +5,7 @@ import User from "./User";
 
 const Section = ({ data, className, title }) => {
   return (
-    <div className="w-[35%] mt-8 px-5 rounded-[20px] bg-white shadow-lg">
+    <div className=" mt-8 px-5 rounded-[20px] bg-white shadow-lg w-full">
       <div className="flexRowBetween">
         <h2 className="text-xl font-semibold font-poppins">{title}</h2>{" "}
         <span className="cursor-pointer text-xl">
@@ -19,7 +19,8 @@ const Section = ({ data, className, title }) => {
             img={item.avatar}
             name={item.name}
             message={item.message}
-            button={"Join"}
+            time={item.time}
+            button={item.button && item.button}
             className={
               index === data.length - 1
                 ? "border-b-0"
