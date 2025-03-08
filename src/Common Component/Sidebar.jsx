@@ -3,6 +3,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { IoHomeOutline, IoSettingsOutline } from "react-icons/io5";
 import { MdLogout, MdOutlineMessage } from "react-icons/md";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import avatar from "../assets/avatar.gif"
 const navItems = [
   { id: 1, name: "Home", link: "/home", icon: <IoHomeOutline /> },
   { id: 2, name: "Messages", link: "/messages", icon: <MdOutlineMessage /> },
@@ -23,8 +24,8 @@ const Sidebar = () => {
         <div className="object-contain rounded-full">
           <picture>
             <img
-              src="https://freesvg.org/img/abstract-user-flat-4.png"
-              alt=""
+              src={avatar}
+              alt={avatar}
               className="w-[70px] h-[70px] rounded-full"
             />
           </picture>
