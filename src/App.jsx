@@ -12,7 +12,10 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Sidebar />}>
-          <Route index element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/messages" element={<h1>From messages</h1>} />
+          <Route path="/notifications" element={<h1>from notification</h1>} />
+          <Route path="/settings" element={<h1>from settings</h1>} />
         </Route>
       </Routes>
     </BrowserRouter>
