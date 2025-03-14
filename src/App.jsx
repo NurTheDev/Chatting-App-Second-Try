@@ -4,6 +4,7 @@ import Sidebar from "./Common Component/Sidebar";
 import Home from "./Pages/Home";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
+import ChatPage from "./Pages/ChatPage.jsx";
 
 const App = () => {
   return (
@@ -13,7 +14,7 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/" element={<Sidebar />}>
           <Route path="/home" element={<Home />} />
-          <Route path="/messages" element={<h1>From messages</h1>} />
+          <Route path="/messages" element={<ChatPage/>} />
           <Route path="/notifications" element={<h1>from notification</h1>} />
           <Route path="/settings" element={<h1>from settings</h1>} />
         </Route>

@@ -7,7 +7,7 @@ const Section = ({ data, className, title }) => {
   return (
     <div className=" mt-8 px-5 rounded-[20px] bg-white shadow-lg w-full">
       <div className="flexRowBetween">
-        <h2 className="text-xl font-semibold font-poppins">{title}</h2>{" "}
+        <div className={"flex gap-x-4 font-semibold justify-center items-center"}><h2 className="text-xl font-semibold font-poppins">{title} </h2><span className={"font-poppins bg-primary-purple w-6 h-6 text-sm flex justify-center items-center text-white rounded-full "}>{title.length}</span></div>
         <span className="cursor-pointer text-xl">
           <IoEllipsisVerticalSharp />
         </span>

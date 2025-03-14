@@ -19,12 +19,12 @@ const User = ({ img, name, message, button, time, className }) => {
           )}
         </div>
       </div>
-      {time  ? (
-        <p className="text-sm text-gray-dark">{time}</p>
-      ) : (
-        <button className="text-white p-2 bg-primary-purple text-xl font-semibold rounded-md min-w-12 hover:scale-95 transition-all duration-200">
+      {time && button ? (
+         <button className="text-white p-2 bg-primary-purple text-xl font-semibold rounded-md min-w-12 hover:scale-95 transition-all duration-200">
           {button}
         </button>
+      ) : (
+        <p className="text-sm text-gray-dark">{time}</p>
       )}
     </div>
   );
