@@ -1,5 +1,4 @@
-import { getAuth, updateProfile } from "firebase/auth";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { IoHomeOutline, IoSettingsOutline } from "react-icons/io5";
 import {
@@ -8,7 +7,7 @@ import {
   MdOutlineMessage,
 } from "react-icons/md";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import avatar from "../assets/avatar.gif";
+import defultAvatar from "../assets/avatar.gif";
 const navItems = [
   { id: 1, name: "Home", link: "/home", icon: <IoHomeOutline /> },
   { id: 2, name: "Messages", link: "/messages", icon: <MdOutlineMessage /> },
@@ -22,21 +21,37 @@ const navItems = [
 ];
 
 const Sidebar = () => {
-  const chooseFile = () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input
-      .click()
-      .then((file) => {
-        const user = getAuth().currentUser;
-        updateProfile(user, {
-          photoURL: file,
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  const [avatar, setAvatar] = useState(defultAvatar);
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://upload-widget.cloudinary.com/latest/global/all.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+  const chooseFile =()=>{
+    window.cloudinary.openUploadWidget({
+      cloudName:"dpduokfva",
+     uploadPreset: "ChattingApplication",
+     sources: [ 'local', 'url', 'image_search', "google_drive"],
+        googleApiKey: "AIzaSyCJgSQIchs0ImfOw4KIXqzNBLujexMOaBk",
+        showAdvancedOptions: true,
+        cropping: true,
+        multiple: false,
+        defaultSource: "local",
+      searchBySites: ["all", "cloudinary.com"],
+        searchByRights: true,
+        maxFiles: 1,
+        showUploadMoreButton: true,
+    }, (error, result)=>{
+      if(error){
+        throw new Error(error);
+      }
+      if(!error && result && result.event === "success"){
+        console.log("Done! Here is the image info: ", result.info, result.event);
+        setAvatar(result.info.secure_url);
+      }
+    })
+  }
   const location = useLocation();
   return (
     <div className="grid grid-cols-12 py-9 px-8 h-screen w-full">
@@ -49,8 +64,7 @@ const Sidebar = () => {
               className="w-[70px] h-[70px] rounded-full "
             />
           </picture>
-          <span
-            onClick={chooseFile}
+          <span onClick={chooseFile}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 scale-90 text-3xl rounded-full p-2 transition-all duration-200 group-hover:opacity-100 group-hover:scale-100 text-primary-purple cursor-pointer"
           >
             <MdOutlineCloudUpload />
