@@ -6,10 +6,10 @@ import {
   MdOutlineCloudUpload,
   MdOutlineMessage,
 } from "react-icons/md";
-import {getAuth, updateProfile} from "firebase/auth";
+import {getAuth} from "firebase/auth";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import defultAvatar from "../assets/avatar.gif";
-// import {getDatabase, ref, set} from "firebase/database";
+import {getDatabase, ref, update} from "firebase/database";
 const navItems = [
   { id: 1, name: "Home", link: "/home", icon: <IoHomeOutline /> },
   { id: 2, name: "Messages", link: "/messages", icon: <MdOutlineMessage /> },
@@ -65,15 +65,15 @@ const Sidebar = () => {
       if(!error && result && result.event === "success"){
         console.log("Done! Here is the image info: ", result.info, result.event);
         setAvatar(result.info.secure_url);
-        // const db = getDatabase();
-        const user = auth.currentUser;
-        updateProfile(user, {
-          photoURL: result.info.secure_url,
+        const db = getDatabase();
+        const userRef = ref(db, `users/${auth.currentUser.uid}`);
+        update(userRef, {
+          photoURL: result.info.secure_url
         });
       }
     })
   }
-
+  console.log(auth.currentUser.uid)
   const location = useLocation();
   return (
     <div className="grid grid-cols-12 py-9 px-8 h-screen w-full">

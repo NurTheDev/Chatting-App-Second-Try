@@ -70,7 +70,7 @@ const Login = () => {
           const user = result.user;
           console.log(token);
           const db = getDatabase();
-          set(ref(db, "users" + user.uid), {
+          set(ref(db, "users/" + user.uid), {
             username: user.displayName,
             email: user.email,
             profile_picture: user.photoURL,
@@ -212,7 +212,7 @@ const Login = () => {
                       <p className="text-sm text-dark-blue font-openSans text-center mt-10">
                           Don&apos;t have an account ?
                           <span className="text-[#EA6C00] font-bold cursor-pointer hover:text-primary-purple transition-all duration-100">
-                <Link to="/register">Sign In</Link>
+                <Link to="/register">Sign out</Link>
               </span>
                       </p>
                   </div>
