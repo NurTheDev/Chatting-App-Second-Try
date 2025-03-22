@@ -5,9 +5,10 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
+
 import React, { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { ScaleLoader } from "react-spinners";
 import { Flip, toast } from "react-toastify";
 import registrationImg from "../assets/registrationBanner.png";
@@ -24,7 +25,7 @@ const Register = () => {
     password: "",
   });
   const [errors, setErrors] = useState({});
-
+const navigate = useNavigate();
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormValues((prevValues) => ({
@@ -32,7 +33,9 @@ const Register = () => {
       [id]: value,
     }));
   };
-
+  const successLogin = () => {
+    navigate("/confirm-email");
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = {};
@@ -54,13 +57,12 @@ const Register = () => {
         .then((userCredential) => {
           // Signed in
           const user = userCredential.user;
-          updateProfile(user, {
+        return  updateProfile(user, {
             displayName: formValues.name,
           });
-          return user;
           // ...
         })
-        .then((user) => {
+        .then(() => {
           toast.success(
             `${formValues.name} your account created successfully`,
             {
@@ -76,20 +78,21 @@ const Register = () => {
             }
           );
 
-          sendEmailVerification(user);
+         return  sendEmailVerification(auth.currentUser);
         })
         .then(() => {
           const db = getDatabase();
           const userId = auth.currentUser.uid;
-          const name = formValues.name;
           const email = auth.currentUser.email;
-          const imageUrl = auth.currentUser.photoURL;
           set(ref(db, "users/" + userId), {
-            username: name,
+            fullName: auth.currentUser.displayName,
             email: email,
-            profile_picture: imageUrl,
+            photoURL: "",
+            uid: userId
           });
-        })
+        }).then(()=>{
+        successLogin();
+      })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;

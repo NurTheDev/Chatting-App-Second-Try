@@ -6,8 +6,10 @@ import {
   MdOutlineCloudUpload,
   MdOutlineMessage,
 } from "react-icons/md";
+import {getAuth, updateProfile} from "firebase/auth";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import defultAvatar from "../assets/avatar.gif";
+// import {getDatabase, ref, set} from "firebase/database";
 const navItems = [
   { id: 1, name: "Home", link: "/home", icon: <IoHomeOutline /> },
   { id: 2, name: "Messages", link: "/messages", icon: <MdOutlineMessage /> },
@@ -21,7 +23,21 @@ const navItems = [
 ];
 
 const Sidebar = () => {
+  const auth = getAuth();
   const [avatar, setAvatar] = useState(defultAvatar);
+  // Load avatar from local storage if it exists
+  useEffect(() => {
+    const localAvatar = localStorage.getItem("avatar");
+    if(localAvatar){
+      setAvatar(localAvatar);
+    }
+  }, []);
+  // save avatar to local storage
+  useEffect(() => {
+    if(avatar !== defultAvatar){
+      localStorage.setItem("avatar", avatar);
+    }
+  }, [avatar]);
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://upload-widget.cloudinary.com/latest/global/all.js";
@@ -30,7 +46,7 @@ const Sidebar = () => {
   }, []);
   const chooseFile =()=>{
     window.cloudinary.openUploadWidget({
-      cloudName:"dpduokfva",
+    cloudName:"dpduokfva",
      uploadPreset: "ChattingApplication",
      sources: [ 'local', 'url', 'image_search', "google_drive"],
         googleApiKey: "AIzaSyCJgSQIchs0ImfOw4KIXqzNBLujexMOaBk",
@@ -49,9 +65,15 @@ const Sidebar = () => {
       if(!error && result && result.event === "success"){
         console.log("Done! Here is the image info: ", result.info, result.event);
         setAvatar(result.info.secure_url);
+        // const db = getDatabase();
+        const user = auth.currentUser;
+        updateProfile(user, {
+          photoURL: result.info.secure_url,
+        });
       }
     })
   }
+
   const location = useLocation();
   return (
     <div className="grid grid-cols-12 py-9 px-8 h-screen w-full">
