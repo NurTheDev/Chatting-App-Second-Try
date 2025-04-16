@@ -74,7 +74,8 @@ const Login = () => {
             username: user.displayName,
             email: user.email,
             profile_picture: user.photoURL,
-            fullName: user.displayName
+            fullName: user.displayName,
+              uid: user.uid
           });
           successLogin();
         })

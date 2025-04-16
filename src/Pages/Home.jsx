@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import Searchbar from "../Common Component/Searchbar";
 import Section from "../Common Component/Section";
 import {
@@ -8,7 +8,20 @@ import {
   groupList,
   userList,
 } from "../lib/Data";
+import { getDatabase, ref, onValue } from "firebase/database";
 const Home = () => {
+    const [user, setUser] = useState([]);
+    const [loading, setLoading] = useState(true);
+        useEffect(() => {
+        const db = getDatabase();
+        setLoading(true)
+        const starCountRef = ref(db, 'users/' );
+        onValue(starCountRef, (snapshot) => {
+            const data = snapshot.val();
+            setUser(Object.values(data));
+            setLoading(false);
+        });
+    }, []);
   return (
     <div className="grid grid-cols-3 justify-center items-center gap-x-5 w-full">
       <div className="w-full">
@@ -24,7 +37,8 @@ const Home = () => {
       <>
         <Section
           title={"Friends"}
-          data={friendList}
+          data={user}
+          loadingState={loading}
           className={
             "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
           }

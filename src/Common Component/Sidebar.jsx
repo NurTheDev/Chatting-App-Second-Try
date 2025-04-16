@@ -6,10 +6,10 @@ import {
   MdOutlineCloudUpload,
   MdOutlineMessage,
 } from "react-icons/md";
-import {getAuth} from "firebase/auth";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import {getAuth, signOut, onAuthStateChanged} from "firebase/auth";
+import {Link, Outlet, useLocation, useNavigate} from "react-router-dom";
 import defultAvatar from "../assets/avatar.gif";
-import {getDatabase, ref, update} from "firebase/database";
+import {getDatabase, onValue, ref, update} from "firebase/database";
 const navItems = [
   { id: 1, name: "Home", link: "/home", icon: <IoHomeOutline /> },
   { id: 2, name: "Messages", link: "/messages", icon: <MdOutlineMessage /> },
@@ -24,20 +24,50 @@ const navItems = [
 
 const Sidebar = () => {
   const auth = getAuth();
-  const [avatar, setAvatar] = useState(defultAvatar);
+  const [user, setUser] = useState(null);
+    const navigate = useNavigate();
+  const [avatar, setAvatar] = useState(defultAvatar)
+  const [currentUser, setCurrentUser] = useState(null);
   // Load avatar from local storage if it exists
   useEffect(() => {
-    const localAvatar = localStorage.getItem("avatar");
-    if(localAvatar){
-      setAvatar(localAvatar);
+    const unsubscribed = onAuthStateChanged(auth, (authUser)=>{
+      if(authUser){
+        setCurrentUser(authUser);
+      }
+      else{
+        navigate("/login");
+      }
+    })
+    return () => {
+      unsubscribed();
     }
   }, []);
-  // save avatar to local storage
   useEffect(() => {
-    if(avatar !== defultAvatar){
-      localStorage.setItem("avatar", avatar);
+    if(!currentUser)return
+    const db = getDatabase();
+    const starCountRef = ref(db, 'users/' );
+   const unsubscribe = onValue(starCountRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const currentAuthUser = Object.values(data).find((findUser) =>
+            findUser.uid === currentUser.uid
+        );
+
+        if (currentAuthUser) {
+          setUser(currentAuthUser);
+          console.log(currentAuthUser)
+          if (currentAuthUser.profile_picture || currentAuthUser.photoURL) {
+            setAvatar(currentAuthUser.profile_picture || currentAuthUser.photoURL);
+          } else {
+            setAvatar(defultAvatar);
+          }
+        }
+      }
     }
-  }, [avatar]);
+    );
+    return ()=> unsubscribe();
+  }, [currentUser]);
+  console.log(currentUser)
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://upload-widget.cloudinary.com/latest/global/all.js";
@@ -73,8 +103,16 @@ const Sidebar = () => {
       }
     })
   }
-  console.log(auth.currentUser.uid)
   const location = useLocation();
+  const handleSignOut =()=>{
+    signOut(auth).then(() => {
+      // Sign-out successful.
+      navigate("/login");
+    }).catch((error) => {
+      // An error happened.
+        console.log(error)
+    });
+  }
   return (
     <div className="grid grid-cols-12 py-9 px-8 h-screen w-full">
       <div className="col-span-1  bg-primary-purple rounded-[20px] py-10 flex flex-col items-center justify-between">
@@ -106,12 +144,11 @@ const Sidebar = () => {
             </li>
           ))}
         </ul>
-        <Link
-          to="/login"
+        <span onClick={handleSignOut}
           className="text-white text-5xl cursor-pointer shadow-2xl hover:scale-95 transition-all duration-100"
         >
           <MdLogout />
-        </Link>
+        </span>
       </div>
       <div className="col-span-1"></div>
       <div className="col-span-10">
