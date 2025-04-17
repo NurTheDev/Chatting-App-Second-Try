@@ -55,7 +55,6 @@ const Sidebar = () => {
 
         if (currentAuthUser) {
           setUser(currentAuthUser);
-          console.log(currentAuthUser)
           if (currentAuthUser.profile_picture || currentAuthUser.photoURL) {
             setAvatar(currentAuthUser.profile_picture || currentAuthUser.photoURL);
           } else {
@@ -67,7 +66,7 @@ const Sidebar = () => {
     );
     return ()=> unsubscribe();
   }, [currentUser]);
-  console.log(currentUser)
+  console.log(user)
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://upload-widget.cloudinary.com/latest/global/all.js";
