@@ -6,22 +6,21 @@ import {
   friendList,
   friendRequest,
   groupList,
-  userList,
+  // userList,
 } from "../lib/Data";
-import { getDatabase, ref, onValue } from "firebase/database";
+import fetchData from "../lib/helper.js";
 const Home = () => {
     const [user, setUser] = useState([]);
     const [loading, setLoading] = useState(true);
-        useEffect(() => {
-        const db = getDatabase();
+
+    useEffect(() => {
         setLoading(true)
-        const starCountRef = ref(db, 'users/' );
-        onValue(starCountRef, (snapshot) => {
-            const data = snapshot.val();
-            setUser(Object.values(data));
+        fetchData((userData)=>{
+            setUser(userData);
             setLoading(false);
         });
     }, []);
+    console.log(user)
   return (
     <div className="grid grid-cols-3 justify-center items-center gap-x-5 w-full">
       <div className="w-full">
@@ -47,7 +46,7 @@ const Home = () => {
       <>
         <Section
           title={"User List"}
-          data={userList}
+          data={user}
           className={
             "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
           }

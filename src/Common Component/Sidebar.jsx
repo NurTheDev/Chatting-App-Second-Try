@@ -66,7 +66,6 @@ const Sidebar = () => {
     );
     return ()=> unsubscribe();
   }, [currentUser]);
-  console.log(user)
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://upload-widget.cloudinary.com/latest/global/all.js";

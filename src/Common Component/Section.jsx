@@ -4,7 +4,7 @@ import { IoEllipsisVerticalSharp } from "react-icons/io5";
 import User from "./User";
 import Skeleton from "./Skeleton";
 import avatar from "../assets/avatar.gif";
-
+// import { getDatabase, ref, onValue } from "firebase/database";
 const Section = ({ data, className, title, loadingState }) => {
     // Create an array for skeleton placeholders
     const skeletonArray = Array(5).fill({});
