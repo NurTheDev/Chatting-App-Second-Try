@@ -1,15 +1,15 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, set, remove } from "firebase/database";
 import { getAuth } from "firebase/auth";
 import moment from "moment";
 const User = ({ img, name, message, button, time, className, uid, email }) => {
     const auth = getAuth();
+    const [buttonState, setButtonState] = React.useState(false);
   const db = getDatabase();
   const handleAddFriend = (data) => {
     // Handle the add friend action here
-    if(button === "+") {
-
+    if(!buttonState) {
       set(ref(db, 'FriendRequest/' + data.uid), {
         id: data.uid+auth.currentUser.uid,
         sender :{
@@ -27,9 +27,17 @@ const User = ({ img, name, message, button, time, className, uid, email }) => {
         createdAt: moment().format('MMMM Do YYYY, h:mm:ss a')
       }).then(()=>{
         alert("Friend request sent");
+      }).then(()=>{
+        setButtonState(true);
+      });
+    } else if (buttonState){
+      remove(ref(db, 'FriendRequest/' + data.uid)).then(()=>{
+        alert("Friend request cancelled");
+        setButtonState(false);
       });
     }
   };
+  console.log(buttonState)
   return (
     <div
       className={`flex justify-between mx-5 items-center gap-4 font-poppins py-4  cursor-pointer hover:shadow-md ${className}`}
@@ -54,7 +62,7 @@ const User = ({ img, name, message, button, time, className, uid, email }) => {
             img: img,
            email: email,
          })} className="text-white p-2 bg-primary-purple text-xl font-semibold rounded-md min-w-12 hover:scale-95 transition-all duration-200">
-          {button}
+            {buttonState ? "Cancel" : button}
         </button>
       ) : (
         <p className="text-sm text-gray-dark">{time}</p>
