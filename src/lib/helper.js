@@ -1,19 +1,17 @@
 import { getDatabase, ref, onValue } from "firebase/database";
 import {getAuth } from "firebase/auth";
-const fetchData =(callback)=>{
+const fetchData =(callback, usedData)=>{
     const auth = getAuth();
     const db = getDatabase();
-    const starCountRef = ref(db, 'users/');
+    const starCountRef = ref(db, usedData);
     onValue(starCountRef, (snapshot) => {
             const data = snapshot.val();
             if(callback && typeof callback === 'function'){
-                Object.values(data).map((item)=>{
-                    if(item.uid !== auth.currentUser.uid){
-                        callback(Object.values(data));
-                    }
+                const filteredData = Object.values(data).filter((item)=>{
+                    return auth.currentUser && item.uid !== auth.currentUser.uid;
                 })
+                callback(filteredData);
             }
-        // return Object.values(data);
     });
 }
 export default fetchData;

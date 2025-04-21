@@ -73,7 +73,7 @@ const Login = () => {
           set(ref(db, "users/" + user.uid), {
             username: user.displayName,
             email: user.email,
-            profile_picture: user.photoURL,
+              photoURL: user.photoURL,
             fullName: user.displayName,
               uid: user.uid
           });

@@ -1,7 +1,35 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { getDatabase, ref, set } from "firebase/database";
+import { getAuth } from "firebase/auth";
+import moment from "moment";
+const User = ({ img, name, message, button, time, className, uid, email }) => {
+    const auth = getAuth();
+  const db = getDatabase();
+  const handleAddFriend = (data) => {
+    // Handle the add friend action here
+    if(button === "+") {
 
-const User = ({ img, name, message, button, time, className }) => {
+      set(ref(db, 'FriendRequest/' + data.uid), {
+        id: data.uid+auth.currentUser.uid,
+        sender :{
+          name: auth.currentUser.displayName,
+          img: auth.currentUser.photoURL,
+          email: auth.currentUser.email,
+          uid: auth.currentUser.uid,
+        },
+        receiver : {
+          uid: data.uid,
+          name: data.name,
+          img: data.img,
+          email: data.email,
+        },
+        createdAt: moment().format('MMMM Do YYYY, h:mm:ss a')
+      }).then(()=>{
+        alert("Friend request sent");
+      });
+    }
+  };
   return (
     <div
       className={`flex justify-between mx-5 items-center gap-4 font-poppins py-4  cursor-pointer hover:shadow-md ${className}`}
@@ -20,7 +48,12 @@ const User = ({ img, name, message, button, time, className }) => {
         </div>
       </div>
       {time && button ? (
-         <button className="text-white p-2 bg-primary-purple text-xl font-semibold rounded-md min-w-12 hover:scale-95 transition-all duration-200">
+         <button onClick={()=>handleAddFriend({
+            uid: uid,
+            name: name,
+            img: img,
+           email: email,
+         })} className="text-white p-2 bg-primary-purple text-xl font-semibold rounded-md min-w-12 hover:scale-95 transition-all duration-200">
           {button}
         </button>
       ) : (

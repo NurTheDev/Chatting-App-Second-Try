@@ -5,10 +5,10 @@ import User from "./User";
 import Skeleton from "./Skeleton";
 import avatar from "../assets/avatar.gif";
 // import { getDatabase, ref, onValue } from "firebase/database";
-const Section = ({ data, className, title, loadingState }) => {
+const Section = ({ data, className, title, loadingState, buttonData }) => {
     // Create an array for skeleton placeholders
+    const dataArray = Array.isArray(data) ? data : Object.values(data || {});
     const skeletonArray = Array(5).fill({});
-
     return (
         <div className="mt-8 px-5 rounded-[20px] bg-white shadow-lg w-full">
             <div className="flexRowBetween">
@@ -33,14 +33,16 @@ const Section = ({ data, className, title, loadingState }) => {
                     </div>
                 ) : (
                     <div>
-                        {data.map((item, index) => (
+                        {dataArray.map((item, index) => (
                             <User
                                 key={item.id || index}
-                                img={item.avatar || item.profile_picture || item.photoURL || avatar}
-                                name={item.name || item.fullName}
+                                uid={item.uid}
+                                email={item.email}
+                                img={item?.sender?.img || item.photoURL || item.avatar || avatar}
+                                name={item.name || item.fullName || item?.sender?.name}
                                 message={item.message || item.email}
-                                time={item.time || "10.00 AM"}
-                                button={item.button}
+                                time={item.time || "10:00 AM"}
+                                button={item.button || buttonData}
                                 className={
                                     index === data.length - 1
                                         ? "border-b-0"
@@ -59,7 +61,9 @@ Section.propTypes = {
     data: PropTypes.array.isRequired,
     className: PropTypes.string,
     title: PropTypes.string.isRequired,
-    loadingState: PropTypes.bool
+    loadingState: PropTypes.bool,
+    buttonData: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    currentUser: PropTypes.object
 };
 
 export default Section;
