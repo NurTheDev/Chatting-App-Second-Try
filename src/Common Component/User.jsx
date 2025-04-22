@@ -3,11 +3,30 @@ import React from "react";
 import { getDatabase, ref, set, remove } from "firebase/database";
 import { getAuth } from "firebase/auth";
 import moment from "moment";
+import {Slide, toast} from "react-toastify";
 const User = ({ img, name, message, button, time, className, uid, email }) => {
     const auth = getAuth();
     const [buttonState, setButtonState] = React.useState(false);
   const db = getDatabase();
-  const handleAddFriend = (data) => {
+  const handleButton = (data) => {
+    // Accept of reject the friend request
+    if(button === "Accept"){
+      set(ref(db, 'FriendList/' + data.uid),{
+        id: data.uid+auth.currentUser.uid,
+        friend:{
+            name: data.name,
+            img: data.img,
+            email: data.email,
+            uid: data.uid,
+        },
+        whomFriend: {
+            name: auth.currentUser.displayName,
+            img: auth.currentUser.photoURL,
+            email: auth.currentUser.email,
+            uid: auth.currentUser.uid,
+        }, createdAt: moment().format('MMMM Do YYYY, h:mm:ss a')
+      })
+    }
     // Handle the add friend action here
     if(!buttonState) {
       set(ref(db, 'FriendRequest/' + data.uid), {
@@ -26,13 +45,33 @@ const User = ({ img, name, message, button, time, className, uid, email }) => {
         },
         createdAt: moment().format('MMMM Do YYYY, h:mm:ss a')
       }).then(()=>{
-        alert("Friend request sent");
+        toast.success('Request sent successfully', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Slide,
+        });
       }).then(()=>{
         setButtonState(true);
       });
     } else if (buttonState){
       remove(ref(db, 'FriendRequest/' + data.uid)).then(()=>{
-        alert("Friend request cancelled");
+        toast.error('Friend Request Cancle', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Slide,
+        });
         setButtonState(false);
       });
     }
@@ -56,7 +95,7 @@ const User = ({ img, name, message, button, time, className, uid, email }) => {
         </div>
       </div>
       {time && button ? (
-         <button onClick={()=>handleAddFriend({
+         <button onClick={()=>handleButton({
             uid: uid,
             name: name,
             img: img,

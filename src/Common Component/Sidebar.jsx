@@ -55,8 +55,8 @@ const Sidebar = () => {
 
         if (currentAuthUser) {
           setUser(currentAuthUser);
-          if (currentAuthUser.profile_picture || currentAuthUser.photoURL) {
-            setAvatar(currentAuthUser.profile_picture || currentAuthUser.photoURL);
+          if (currentAuthUser.photoURL) {
+            setAvatar(currentAuthUser.photoURL);
           } else {
             setAvatar(defultAvatar);
           }

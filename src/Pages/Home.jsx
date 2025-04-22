@@ -70,7 +70,7 @@ const [friendRequest, setFriendRequest] = useState([]);
         <Section
           title={"Friend  Request"}
           data={friendRequest}
-            loadingState={loading}
+          loadingState={loading}
           buttonData={"Accept"}
           className={
             "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
