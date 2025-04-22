@@ -29,7 +29,6 @@ const [friendRequest, setFriendRequest] = useState([]);
                 return request.receiver.uid === auth.currentUser?.uid;
             })
             setFriendRequest(filteredRequests);
-            console.log(friendRequestData)
             setLoading(false);
         }, "FriendRequest/");
     }, []);

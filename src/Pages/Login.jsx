@@ -68,12 +68,11 @@ const Login = () => {
           const credential = GoogleAuthProvider.credentialFromResult(result);
           const token = credential.accessToken;
           const user = result.user;
-          console.log(token);
           const db = getDatabase();
           set(ref(db, "users/" + user.uid), {
             username: user.displayName,
             email: user.email,
-              photoURL: user.photoURL,
+            photoURL: user.photoURL,
             fullName: user.displayName,
               uid: user.uid
           });

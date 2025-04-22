@@ -1,13 +1,18 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { getDatabase, ref, set, remove } from "firebase/database";
 import { getAuth } from "firebase/auth";
 import moment from "moment";
 import {Slide, toast} from "react-toastify";
-const User = ({ img, name, message, button, time, className, uid, email }) => {
+import propTypes from "prop-types";
+import fetchData from "../lib/helper.js";
+const User = ({ img, name, message, button, time, className,  uid, email }) => {
     const auth = getAuth();
+  const [activeUser, setActiveUser] = useState([]);
     const [buttonState, setButtonState] = React.useState(false);
+
   const db = getDatabase();
+
   const handleButton = (data) => {
     // Accept of reject the friend request
     if(button === "Accept"){
@@ -20,11 +25,11 @@ const User = ({ img, name, message, button, time, className, uid, email }) => {
             uid: data.uid,
         },
         whomFriend: {
-            name: auth.currentUser.displayName,
-            img: auth.currentUser.photoURL,
-            email: auth.currentUser.email,
-            uid: auth.currentUser.uid,
-        }, createdAt: moment().format('MMMM Do YYYY, h:mm:ss a')
+          name: activeUser[0].fullName || auth.currentUser.displayName,
+          img: activeUser[0].photoURL || auth.currentUser.photoURL,
+          email: activeUser[0].email ||auth.currentUser.email,
+          uid: auth.currentUser.uid,
+        }, createdAt: moment().toISOString()
       })
     }
     // Handle the add friend action here
@@ -32,9 +37,9 @@ const User = ({ img, name, message, button, time, className, uid, email }) => {
       set(ref(db, 'FriendRequest/' + data.uid), {
         id: data.uid+auth.currentUser.uid,
         sender :{
-          name: auth.currentUser.displayName,
-          img: auth.currentUser.photoURL,
-          email: auth.currentUser.email,
+          name: activeUser[0].fullName || auth.currentUser.displayName,
+          img: activeUser[0].photoURL || auth.currentUser.photoURL,
+          email: activeUser[0].email ||auth.currentUser.email,
           uid: auth.currentUser.uid,
         },
         receiver : {
@@ -43,7 +48,8 @@ const User = ({ img, name, message, button, time, className, uid, email }) => {
           img: data.img,
           email: data.email,
         },
-        createdAt: moment().format('MMMM Do YYYY, h:mm:ss a')
+        createdAt: moment().toISOString(),
+        sentRequest: true,
       }).then(()=>{
         toast.success('Request sent successfully', {
           position: "top-right",
@@ -76,7 +82,6 @@ const User = ({ img, name, message, button, time, className, uid, email }) => {
       });
     }
   };
-  console.log(buttonState)
   return (
     <div
       className={`flex justify-between mx-5 items-center gap-4 font-poppins py-4  cursor-pointer hover:shadow-md ${className}`}
@@ -116,5 +121,7 @@ User.propTypes = {
   button: PropTypes.string.isRequired,
   time: PropTypes.string,
   className: PropTypes.string,
+  uid: propTypes.string,
+  email: PropTypes.string,
 };
 export default User;
