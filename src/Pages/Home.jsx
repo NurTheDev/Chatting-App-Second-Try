@@ -3,10 +3,10 @@ import Searchbar from "../Common Component/Searchbar";
 import Section from "../Common Component/Section";
 import { getAuth } from "firebase/auth";
 import {
-  blockList,
-  friendList,
-  friendRequest,
-  groupList,
+  // blockList,
+  // friendList,
+  // friendRequest,
+  // groupList,
   // userList,
 } from "../lib/Data";
 import fetchData from "../lib/helper.js";
@@ -32,6 +32,14 @@ const [friendRequest, setFriendRequest] = useState([]);
             setLoading(false);
         }, "FriendRequest/");
     }, []);
+    useEffect(() => {
+        if (friendRequest && friendRequest.length > 0) {
+            const userIDs = friendRequest.map(request => request?.id);
+            setRequestID(userIDs[0]);
+        }
+    }, [friendRequest]);
+    const [requestID, setRequestID] = useState(null);
+
   return (
     <div className="grid grid-cols-3 justify-center items-center gap-x-5 w-full">
       <div className="w-full">
@@ -59,6 +67,7 @@ const [friendRequest, setFriendRequest] = useState([]);
           title={"User List"}
           data={user}
           loadingState={loading}
+          IDs = {requestID? requestID : null}
           buttonData={"+"}
           className={
             "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"

@@ -6,14 +6,22 @@ import moment from "moment";
 import {Slide, toast} from "react-toastify";
 import propTypes from "prop-types";
 import fetchData from "../lib/helper.js";
-const User = ({ img, name, message, button, time, className,  uid, email }) => {
+const User = ({ img, name, message, button, time, className,  uid, email, IDs }) => {
     const auth = getAuth();
   const [activeUser, setActiveUser] = useState([]);
     const [buttonState, setButtonState] = React.useState(false);
-
   const db = getDatabase();
-
+  const [loacalUsrId , setLocalUserId] = useState(null);
+  useEffect(() => {
+    fetchData((userData)=>{
+      const currentUserData = userData.filter((data)=>{
+        return data.uid === auth.currentUser?.uid;
+      })
+      setActiveUser(currentUserData);
+    }, "users/", "owner");
+  }, []);
   const handleButton = (data) => {
+    setLocalUserId(data.uid+auth.currentUser.uid)
     // Accept of reject the friend request
     if(button === "Accept"){
       set(ref(db, 'FriendList/' + data.uid),{
@@ -50,6 +58,7 @@ const User = ({ img, name, message, button, time, className,  uid, email }) => {
         },
         createdAt: moment().toISOString(),
         sentRequest: true,
+         notification: `${activeUser[0].fullName || auth.currentUser.displayName} sent you a friend request`,
       }).then(()=>{
         toast.success('Request sent successfully', {
           position: "top-right",
@@ -123,5 +132,6 @@ User.propTypes = {
   className: PropTypes.string,
   uid: propTypes.string,
   email: PropTypes.string,
+  IDs: PropTypes.oneOfType([PropTypes.string, PropTypes.array])
 };
 export default User;

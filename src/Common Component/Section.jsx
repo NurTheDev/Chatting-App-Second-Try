@@ -1,13 +1,12 @@
 import PropTypes from "prop-types";
-import React, {useEffect} from "react";
+import React from "react";
 import { IoEllipsisVerticalSharp } from "react-icons/io5";
 import User from "./User";
 import Skeleton from "./Skeleton";
 import avatar from "../assets/avatar.gif";
 import moment from "moment";
 // import { getDatabase, ref, onValue } from "firebase/database";
-const Section = ({ data, className, title, loadingState, buttonData }) => {
-    // Create an array for skeleton placeholders
+const Section = ({ data, className, title, loadingState, buttonData, IDs }) => {
     const dataArray = Array.isArray(data) ? data : Object.values(data || {});
     const skeletonArray = Array(5).fill({});
     return (
@@ -38,6 +37,7 @@ const Section = ({ data, className, title, loadingState, buttonData }) => {
                             <User
                                 key={item.id || index}
                                 uid={item.uid}
+                                IDs={IDs} // Add this line
                                 email={item.email}
                                 img={item?.sender?.img || item.photoURL || item.avatar || avatar}
                                 name={item.name || item.fullName || item?.sender?.name}
@@ -64,7 +64,7 @@ Section.propTypes = {
     title: PropTypes.string.isRequired,
     loadingState: PropTypes.bool,
     buttonData: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    currentUser: PropTypes.object,
+    IDs: PropTypes.oneOfType([PropTypes.string, PropTypes.array])
 };
 
 export default Section;
