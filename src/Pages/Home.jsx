@@ -15,13 +15,24 @@ const Home = () => {
     const [user, setUser] = useState([]);
     const [loading, setLoading] = useState(true);
 const [friendRequest, setFriendRequest] = useState([]);
+const [friendlist, setFriendlist] = useState([]);
     useEffect(() => {
         setLoading(true)
         fetchData((userData)=>{
             setUser(userData);
             setLoading(false);
         }, "users/");
+    }, []);    useEffect(() => {
+        setLoading(true)
+        fetchData((friendlist)=>{
+            const filteredFriendlist = friendlist.filter((friend)=>{
+                return friend.whomFriend.uid !== auth.currentUser?.uid;
+            })
+            setFriendlist(filteredFriendlist);
+            setLoading(false);
+        }, "FriendList/");
     }, []);
+
     useEffect(() => {
         setLoading(true)
         fetchData((friendRequestData)=>{
@@ -55,8 +66,9 @@ const [friendRequest, setFriendRequest] = useState([]);
       <>
         <Section
           title={"Friends"}
-          data={user}
+          data={friendlist}
           loadingState={loading}
+          buttonData={"block"}
           className={
             "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
           }

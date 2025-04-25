@@ -9,6 +9,7 @@ import moment from "moment";
 const Section = ({ data, className, title, loadingState, buttonData, IDs }) => {
     const dataArray = Array.isArray(data) ? data : Object.values(data || {});
     const skeletonArray = Array(5).fill({});
+    console.log(data)
     return (
         <div className="mt-8 px-5 rounded-[20px] bg-white shadow-lg w-full">
             <div className="flexRowBetween">
@@ -36,14 +37,15 @@ const Section = ({ data, className, title, loadingState, buttonData, IDs }) => {
                         {dataArray.map((item, index) => (
                             <User
                                 key={item.id || index}
-                                uid={item.uid}
-                                IDs={IDs} // Add this line
+                                uid={item.uid }
+                                IDs={IDs}
                                 email={item.email}
-                                img={item?.sender?.img || item.photoURL || item.avatar || avatar}
-                                name={item.name || item.fullName || item?.sender?.name}
+                                img={item?.sender?.img ||item?.friend?.img || item.photoURL || item.avatar || avatar}
+                                name={item.name || item?.friend?.name || item.fullName || item?.sender?.name}
                                 message={item.message || item.email}
                                 time={item.time || moment(item.createdAt).fromNow() || "10:00 AM"}
                                 button={item.button || buttonData}
+                                userData={item}
                                 className={
                                     index === data.length - 1
                                         ? "border-b-0"

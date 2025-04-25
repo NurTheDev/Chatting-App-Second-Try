@@ -6,6 +6,7 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import ChatPage from "./Pages/ChatPage.jsx";
 import ConfirmEmail from "./Pages/ConfirmEmail.jsx";
+import Settings from "./Pages/Settings.jsx";
 
 const App = () => {
   return (
@@ -18,7 +19,7 @@ const App = () => {
           <Route path="/home" element={<Home />} />
           <Route path="/messages" element={<ChatPage/>} />
           <Route path="/notifications" element={<h1>from notification</h1>} />
-          <Route path="/settings" element={<h1>from settings</h1>} />
+          <Route path="/settings" element={<h1><Settings/></h1>} />
         </Route>
       </Routes>
     </BrowserRouter>

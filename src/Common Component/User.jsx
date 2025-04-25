@@ -4,14 +4,13 @@ import { getDatabase, ref, set, remove } from "firebase/database";
 import { getAuth } from "firebase/auth";
 import moment from "moment";
 import {Slide, toast} from "react-toastify";
-import propTypes from "prop-types";
 import fetchData from "../lib/helper.js";
-const User = ({ img, name, message, button, time, className,  uid, email, IDs }) => {
+const User = ({ img, name, message, button, time, className,  uid, email, IDs, userData }) => {
     const auth = getAuth();
   const [activeUser, setActiveUser] = useState([]);
+  // const [loacalUsrId , setLocalUserId] = useState(null);
     const [buttonState, setButtonState] = React.useState(false);
   const db = getDatabase();
-  const [loacalUsrId , setLocalUserId] = useState(null);
   useEffect(() => {
     fetchData((userData)=>{
       const currentUserData = userData.filter((data)=>{
@@ -20,26 +19,43 @@ const User = ({ img, name, message, button, time, className,  uid, email, IDs })
       setActiveUser(currentUserData);
     }, "users/", "owner");
   }, []);
-  const handleButton = (data) => {
-    setLocalUserId(data.uid+auth.currentUser.uid)
-    // Accept of reject the friend request
+  const handleAccept =()=>{
+    console.log(userData.receiver.uid);
     if(button === "Accept"){
-      set(ref(db, 'FriendList/' + data.uid),{
-        id: data.uid+auth.currentUser.uid,
+      console.log("Accepting friend request for", userData.receiver.uid);
+      console.log("working")
+      set(ref(db, 'FriendList/' + userData.receiver.uid),{
+        id: userData.receiver.uid + auth.currentUser.uid,
         friend:{
-            name: data.name,
-            img: data.img,
-            email: data.email,
-            uid: data.uid,
+          name: userData.receiver.name,
+          img: userData.receiver.img,
+          email: userData.receiver.email,
+          uid: userData.receiver.uid,
         },
         whomFriend: {
-          name: activeUser[0].fullName || auth.currentUser.displayName,
-          img: activeUser[0].photoURL || auth.currentUser.photoURL,
-          email: activeUser[0].email ||auth.currentUser.email,
+          name: activeUser[0]?.fullName || auth.currentUser.displayName,
+          img: activeUser[0]?.photoURL || auth.currentUser.photoURL,
+          email: activeUser[0]?.email ||auth.currentUser.email,
           uid: auth.currentUser.uid,
         }, createdAt: moment().toISOString()
+      }).then(()=>{
+        remove(ref(db, 'FriendRequest/' + userData.receiver.uid))
+        toast.success('Friend Request Accepted', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Slide,
+        })
       })
     }
+  }
+  const handleButton = (data) => {
+    handleAccept(data)
     // Handle the add friend action here
     if(!buttonState) {
       set(ref(db, 'FriendRequest/' + data.uid), {
@@ -115,7 +131,7 @@ const User = ({ img, name, message, button, time, className,  uid, email, IDs })
             img: img,
            email: email,
          })} className="text-white p-2 bg-primary-purple text-xl font-semibold rounded-md min-w-12 hover:scale-95 transition-all duration-200">
-            {buttonState ? "Cancel" : button}
+           {button === "Accept" ? "Accept" : (buttonState ? "Cancel" : button)}
         </button>
       ) : (
         <p className="text-sm text-gray-dark">{time}</p>
@@ -130,8 +146,9 @@ User.propTypes = {
   button: PropTypes.string.isRequired,
   time: PropTypes.string,
   className: PropTypes.string,
-  uid: propTypes.string,
+  uid: PropTypes.string,
   email: PropTypes.string,
-  IDs: PropTypes.oneOfType([PropTypes.string, PropTypes.array])
+  IDs: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+    userData: PropTypes.object,
 };
 export default User;
