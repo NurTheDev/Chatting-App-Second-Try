@@ -3,10 +3,10 @@ import Searchbar from "../Common Component/Searchbar";
 import Section from "../Common Component/Section";
 import { getAuth } from "firebase/auth";
 import {
-  // blockList,
+  blockList,
   // friendList,
   // friendRequest,
-  // groupList,
+  groupList,
   // userList,
 } from "../lib/Data";
 import fetchData from "../lib/helper.js";
@@ -16,19 +16,10 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
 const [friendRequest, setFriendRequest] = useState([]);
 const [friendlist, setFriendlist] = useState([]);
-    useEffect(() => {
-        setLoading(true)
-        fetchData((userData)=>{
-            setUser(userData);
-            setLoading(false);
-        }, "users/");
-    }, []);    useEffect(() => {
+   useEffect(() => {
         setLoading(true)
         fetchData((friendlist)=>{
-            const filteredFriendlist = friendlist.filter((friend)=>{
-                return friend.whomFriend.uid !== auth.currentUser?.uid;
-            })
-            setFriendlist(filteredFriendlist);
+            setFriendlist(friendlist);
             setLoading(false);
         }, "FriendList/");
     }, []);
@@ -49,6 +40,15 @@ const [friendlist, setFriendlist] = useState([]);
             setRequestID(userIDs[0]);
         }
     }, [friendRequest]);
+    useEffect(() => {
+        setLoading(true)
+        fetchData((userData)=>{
+
+            console.log(filteredUsers)
+            setUser(userData);
+            setLoading(false);
+        }, "users/");
+    }, []);
     const [requestID, setRequestID] = useState(null);
 
   return (
@@ -57,7 +57,7 @@ const [friendlist, setFriendlist] = useState([]);
         <Searchbar />
         <Section
           title={"Group List"}
-          data={user}
+          data={groupList}
           className={
             "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[32vh]"
           }
@@ -109,7 +109,7 @@ const [friendlist, setFriendlist] = useState([]);
       <>
         <Section
           title={"Blocked Users"}
-          data={user}
+          data={blockList}
           className={
             "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
           }

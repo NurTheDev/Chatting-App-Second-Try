@@ -42,6 +42,7 @@ const Sidebar = () => {
       unsubscribed();
     }
   }, []);
+
   useEffect(() => {
     if(!currentUser)return
     const db = getDatabase();
@@ -50,13 +51,13 @@ const Sidebar = () => {
       const data = snapshot.val();
       if (data) {
         const currentAuthUser = Object.values(data).find((findUser) =>
-            findUser.uid === currentUser.uid
+            findUser?.uid   === currentUser.uid
         );
 
         if (currentAuthUser) {
           setUser(currentAuthUser);
-          if (currentAuthUser.photoURL) {
-            setAvatar(currentAuthUser.photoURL);
+          if (currentAuthUser?.photoURL) {
+            setAvatar(currentAuthUser?.photoURL);
           } else {
             setAvatar(defultAvatar);
           }

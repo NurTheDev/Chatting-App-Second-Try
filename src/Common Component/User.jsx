@@ -1,12 +1,13 @@
 import PropTypes from "prop-types";
 import React, {useEffect, useState} from "react";
-import { getDatabase, ref, set, remove } from "firebase/database";
+import {getDatabase, ref, set, remove, update} from "firebase/database";
 import { getAuth } from "firebase/auth";
 import moment from "moment";
 import {Slide, toast} from "react-toastify";
 import fetchData from "../lib/helper.js";
 const User = ({ img, name, message, button, time, className,  uid, email, IDs, userData }) => {
     const auth = getAuth();
+
   const [activeUser, setActiveUser] = useState([]);
   // const [loacalUsrId , setLocalUserId] = useState(null);
     const [buttonState, setButtonState] = React.useState(false);
@@ -19,27 +20,36 @@ const User = ({ img, name, message, button, time, className,  uid, email, IDs, u
       setActiveUser(currentUserData);
     }, "users/", "owner");
   }, []);
-  const handleAccept =()=>{
-    console.log(userData.receiver.uid);
-    if(button === "Accept"){
-      console.log("Accepting friend request for", userData.receiver.uid);
-      console.log("working")
-      set(ref(db, 'FriendList/' + userData.receiver.uid),{
+  const handleAccept = () => {
+    if (button === "Accept" && userData) {
+      set(ref(db, 'FriendList/' + userData.receiver.uid), {
         id: userData.receiver.uid + auth.currentUser.uid,
-        friend:{
-          name: userData.receiver.name,
-          img: userData.receiver.img,
-          email: userData.receiver.email,
-          uid: userData.receiver.uid,
+        friend: {
+          name: userData.sender.name,
+          img: userData.sender.img,
+          email: userData.sender.email,
+          uid: userData.sender.uid,
         },
         whomFriend: {
           name: activeUser[0]?.fullName || auth.currentUser.displayName,
           img: activeUser[0]?.photoURL || auth.currentUser.photoURL,
-          email: activeUser[0]?.email ||auth.currentUser.email,
+          email: activeUser[0]?.email || auth.currentUser.email,
           uid: auth.currentUser.uid,
-        }, createdAt: moment().toISOString()
-      }).then(()=>{
-        remove(ref(db, 'FriendRequest/' + userData.receiver.uid))
+        },
+        createdAt: moment().toISOString(),
+        isFriend: true,
+      }).then(() => {
+        remove(ref(db, 'FriendRequest/' + userData.receiver.uid)).then(() => {
+          console.log(userData.receiver.uid, userData.sender.uid, auth.currentUser.uid);
+          update(ref(db, "users/" + userData.receiver.uid), {
+            isFriend: true,
+          }).then(() => (
+              update(ref(db, "users/" + userData.sender.uid), {
+                isFriend: true,
+              }).then(()=>{
+                console.log("Friend List Updated")})
+          ));
+        })
         toast.success('Friend Request Accepted', {
           position: "top-right",
           autoClose: 5000,
@@ -50,61 +60,63 @@ const User = ({ img, name, message, button, time, className,  uid, email, IDs, u
           progress: undefined,
           theme: "light",
           transition: Slide,
-        })
-      })
+        });
+      });
     }
-  }
+  };
   const handleButton = (data) => {
-    handleAccept(data)
-    // Handle the add friend action here
-    if(!buttonState) {
-      set(ref(db, 'FriendRequest/' + data.uid), {
-        id: data.uid+auth.currentUser.uid,
-        sender :{
-          name: activeUser[0].fullName || auth.currentUser.displayName,
-          img: activeUser[0].photoURL || auth.currentUser.photoURL,
-          email: activeUser[0].email ||auth.currentUser.email,
-          uid: auth.currentUser.uid,
-        },
-        receiver : {
-          uid: data.uid,
-          name: data.name,
-          img: data.img,
-          email: data.email,
-        },
-        createdAt: moment().toISOString(),
-        sentRequest: true,
-         notification: `${activeUser[0].fullName || auth.currentUser.displayName} sent you a friend request`,
-      }).then(()=>{
-        toast.success('Request sent successfully', {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          transition: Slide,
+    if (button === "Accept") {
+      handleAccept();
+    } else {
+      // Handle the add friend action here
+      if (!buttonState) {
+        set(ref(db, 'FriendRequest/' + data.uid), {
+          id: data.uid + auth.currentUser.uid,
+          sender: {
+            name: activeUser[0]?.fullName || auth.currentUser.displayName,
+            img: activeUser[0]?.photoURL || auth.currentUser.photoURL,
+            email: activeUser[0]?.email || auth.currentUser.email,
+            uid: auth.currentUser.uid,
+          },
+          receiver: {
+            uid: data.uid,
+            name: data.name,
+            img: data.img,
+            email: data.email,
+          },
+          createdAt: moment().toISOString(),
+          sentRequest: true,
+          notification: `${activeUser[0]?.fullName || auth.currentUser.displayName} sent you a friend request`,
+        }).then(() => {
+          toast.success('Request sent successfully', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Slide,
+          });
+          setButtonState(true);
         });
-      }).then(()=>{
-        setButtonState(true);
-      });
-    } else if (buttonState){
-      remove(ref(db, 'FriendRequest/' + data.uid)).then(()=>{
-        toast.error('Friend Request Cancle', {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Slide,
+      } else if (buttonState) {
+        remove(ref(db, 'FriendRequest/' + data.uid)).then(() => {
+          toast.error('Friend Request Canceled', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Slide,
+          });
+          setButtonState(false);
         });
-        setButtonState(false);
-      });
+      }
     }
   };
   return (

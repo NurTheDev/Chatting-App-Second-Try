@@ -31,8 +31,6 @@ const Login = () => {
   //           setAuthLoaded(true);
   //       })
   //   }, [auth]);
-
-  console.log(auth.currentUser)
   const { showPassword, toggleShowPassword } = useTogglePasswordVisibility();
   const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState({
