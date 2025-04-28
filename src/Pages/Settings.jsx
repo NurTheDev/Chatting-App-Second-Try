@@ -9,6 +9,7 @@ import {VscColorMode} from "react-icons/vsc";
 import {getAuth, updateProfile} from "firebase/auth";
 import {toast} from "react-toastify";
 import {getDatabase, ref, update} from "firebase/database";
+import UnderConstruction from "../Common Component/UnderConstruction.jsx";
 
 function Settings() {
     const settingsItems = [
@@ -18,7 +19,7 @@ function Settings() {
         {id: "help", title: "Help", icon: <IoMdHelpCircleOutline/>}
     ]
     const accountSetting = [
-        {id: 1, title: "Change Password", icon: <FaKey/>},
+        {id: "changePassword", title: "Change Password", icon: <FaKey/>},
         {id: 2, title: "Theme.", icon: <VscColorMode/>},
         {id: 3, title: "Delete Account.", icon: <FaTrashAlt/>},
     ]
@@ -28,31 +29,101 @@ function Settings() {
         firstName: "",
         lastName: "",
     });
+    const [bio, setBio] = useState("")
+    const [error, setError] = useState({
+        firstName: "",
+        lastName: "",
+        bio: "",
+    })
+    const auth = getAuth();
+    const db = getDatabase();
+    const [currentUser, setCurrentUser] = useState([]);
+    useEffect(() => {
+        fetchData((userData) => {
+            setCurrentUser(userData);
+        }, "users/", "owner");
+    }, []);
+    useEffect(() => {
+        if (currentUser[0]?.fullName) {
+            const nameParts = currentUser[0].fullName.split(" ");
+            setName({
+                firstName: nameParts[0] || "",
+                lastName: nameParts.slice(1).join("") || ""
+            })
+        }
+        if (currentUser[0]?.bio) {
+            setBio(currentUser[0].bio);
+        }
+    }, [currentUser]);
     const handleSettings = (e) => {
         if (e.id === "editName") {
             setSettings("editName");
         } else if (e.id === "editBio") {
             setSettings("editBio");
+        } else if (e.id === "editProfile") {
+            setSettings("editProfile");
+        } else if (e.id === "changePassword") {
+            setSettings("changePassword");
         }
     }
     const handleInputChange = (e) => {
         const {id, value} = e.target;
-        setName((prevState) => (
-            {
+        if (id === "firstName" || id === "lastName") {
+            setName((prevState) => (
+                {
+                    ...prevState,
+                    [id]: value,
+                }
+            ))
+        }
+        if (value === "") {
+            setError((prevState) => ({
                 ...prevState,
-                [id]: value,
+                [id]: `${id === "firstName" ? "First" : "Last"} name must be filled`,
+            }))
+        } else {
+            setError((prevState) => ({
+                ...prevState,
+                [id]: "",
+            }))
+        }
+        if (id === "bio") {
+            setBio(value);
+            if (value === "") {
+                setError((prevState) => ({
+                    ...prevState,
+                    bio: "Bio cannot be empty",
+                }))
+            } else if (value.length > 100) {
+                setError(prev => ({...prev, bio: "Bio must be less than 101 characters"}));
+            } else {
+                setError((prevState) => ({
+                    ...prevState,
+                    bio: "",
+                }))
             }
-        ))
+        }
     }
     const handleSubmit = (e) => {
         e.preventDefault();
         const {firstName, lastName} = name;
+        if (error.firstName || error.lastName || error.bio) {
+            toast.error("Please fix the errors before submitting", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+            });
+            return;
+        }
         if (firstName && lastName) {
-            const auth = getAuth();
             updateProfile(auth.currentUser, {
                 displayName: `${firstName} ${lastName}`,
             }).then(() => {
-                const db = getDatabase();
                 update(ref(db, "users/" + auth.currentUser.uid), {
                     fullName: `${firstName} ${lastName}`,
                 }).then((response) => {
@@ -84,13 +155,37 @@ function Settings() {
             });
 
         }
+        if (bio && !error.bio) {
+            update(ref(db, "users/" + auth.currentUser.uid), {
+                bio: bio,
+            }).then((response) => {
+                console.log("Bio updated successfully", response);
+                setSettings("");
+                toast.success("Bio updated successfully", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+            }).catch((error) => {
+                console.log("Error updating bio", error);
+                toast.error("Error updating bio", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+            })
+        }
     }
-    const [currentUser, setCurrentUser] = useState([]);
-    useEffect(() => {
-        fetchData((userData) => {
-            setCurrentUser(userData);
-        }, "users/", "owner");
-    }, []);
 
     return (
         <div>
@@ -130,6 +225,7 @@ function Settings() {
                     {!settings ? (<ul className={"mt-10"}>
                         {accountSetting?.map((item) => (
                             <li key={item.id}
+                                onClick={() => handleSettings(item)}
                                 className={"flex items-center gap-x-4 py-5 hover:scale-95 transition-all duration-100 cursor-pointer hover:text-primary-purple"}>
                                 <span className={"text-2xl text-gray-500"}>
                                     {item.icon}
@@ -147,6 +243,7 @@ function Settings() {
                                        onChange={handleInputChange}
                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                        placeholder="Enter your first name" required/>
+                                {error.firstName && <p className="text-red-500 text-sm">{error.firstName}</p>}
                             </div>
                             <div className="mb-5">
                                 <label htmlFor="lastName"
@@ -155,24 +252,27 @@ function Settings() {
                                        onChange={handleInputChange}
                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                        placeholder="Enter your last name" required/>
+                                {error.lastName && <p className="text-red-500 text-sm">{error.lastName}</p>}
                             </div>
 
                             <button type="submit"
                                     className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ">Submit
                             </button>
                         </form>
-                    </div>) : settings === "editBio" ? (<form className="max-w-sm mx-auto mt-10 font-poppins">
-                        <div className="mb-5">
-                            <label htmlFor="bio"
-                                   className="block mb-2 text-lg font-semibold text-gray-900 ">Set your Bio</label>
-                            <input type="text" id="bio"
-                                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                                   placeholder="Max charecter 101   " required/>
-                        </div>
-                        <button type="submit"
-                                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ">Submit
-                        </button>
-                    </form>) : ""}
+                    </div>) : settings === "editBio" ? (
+                        <form className="max-w-sm mx-auto mt-10 font-poppins" onSubmit={handleSubmit}>
+                            <div className="mb-5">
+                                <label htmlFor="bio"
+                                       className="block mb-2 text-lg font-semibold text-gray-900 ">Set your Bio</label>
+                                <input type="text" id="bio" onChange={handleInputChange}
+                                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                       placeholder="Max charecter 101   " required/>
+                                {error.bio && <p className="text-red-500 text-sm">{error.bio}</p>}
+                            </div>
+                            <button type="submit"
+                                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ">Submit
+                            </button>
+                        </form>) : settings === "editProfile" ? (<UnderConstruction/>) : ""}
 
                 </div>
             </div>
