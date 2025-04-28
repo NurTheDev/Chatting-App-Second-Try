@@ -6,13 +6,16 @@ import {RiMessage3Fill} from "react-icons/ri";
 import {TbPhotoPlus} from "react-icons/tb";
 import {IoMdHelpCircleOutline} from "react-icons/io";
 import {VscColorMode} from "react-icons/vsc";
+import {getAuth, updateProfile} from "firebase/auth";
+import {toast} from "react-toastify";
+import {getDatabase, ref, update} from "firebase/database";
 
 function Settings() {
     const settingsItems = [
-        {id: 1, title: "Edit Profile Name", icon: <FaEdit/>},
-        {id: 2, title: "Edit Profile Status Info", icon: <RiMessage3Fill/>},
-        {id: 3, title: "Edit Profile Photo", icon: <TbPhotoPlus/>},
-        {id: 4, title: "Help", icon: <IoMdHelpCircleOutline/>}
+        {id: "editName", title: "Edit Profile Name", icon: <FaEdit/>},
+        {id: "editBio", title: "Edit Profile Status Info", icon: <RiMessage3Fill/>},
+        {id: "editProfile", title: "Edit Profile Photo", icon: <TbPhotoPlus/>},
+        {id: "help", title: "Help", icon: <IoMdHelpCircleOutline/>}
     ]
     const accountSetting = [
         {id: 1, title: "Change Password", icon: <FaKey/>},
@@ -20,6 +23,68 @@ function Settings() {
         {id: 3, title: "Delete Account.", icon: <FaTrashAlt/>},
     ]
     // const auth = getAuth();
+    const [settings, setSettings] = useState("");
+    const [name, setName] = useState({
+        firstName: "",
+        lastName: "",
+    });
+    const handleSettings = (e) => {
+        if (e.id === "editName") {
+            setSettings("editName");
+        } else if (e.id === "editBio") {
+            setSettings("editBio");
+        }
+    }
+    const handleInputChange = (e) => {
+        const {id, value} = e.target;
+        setName((prevState) => (
+            {
+                ...prevState,
+                [id]: value,
+            }
+        ))
+    }
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const {firstName, lastName} = name;
+        if (firstName && lastName) {
+            const auth = getAuth();
+            updateProfile(auth.currentUser, {
+                displayName: `${firstName} ${lastName}`,
+            }).then(() => {
+                const db = getDatabase();
+                update(ref(db, "users/" + auth.currentUser.uid), {
+                    fullName: `${firstName} ${lastName}`,
+                }).then((response) => {
+                    console.log("Profile updated successfully", response);
+                    setSettings("");
+                    toast.success("Profile updated successfully", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                    });
+                })
+            }).catch((err) => {
+                console.log("Error updating profile", err);
+                toast.error("Error updating profile", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+            });
+
+        }
+    }
     const [currentUser, setCurrentUser] = useState([]);
     useEffect(() => {
         fetchData((userData) => {
@@ -49,6 +114,7 @@ function Settings() {
                     <ul className={"mt-10"}>
                         {settingsItems?.map((item) => (
                             <li key={item.id}
+                                onClick={() => handleSettings(item)}
                                 className={"flex items-center gap-x-4 py-5 hover:scale-95 transition-all duration-100 cursor-pointer hover:text-primary-purple"}>
                                 <span className={"text-2xl text-gray-500"}>
                                     {item.icon}
@@ -56,13 +122,12 @@ function Settings() {
                                 <h3 className={"text-xl font-poppins"}>{item.title}</h3>
                             </li>
                         ))}
-
                     </ul>
                 </div>
                 <div className={" py-5 px-7 rounded-[20px] shadow-md"}>
                     <h3
                         className={"text-xl font-semibold font-poppins"}>Account Settings</h3>
-                    <ul className={"mt-10"}>
+                    {!settings ? (<ul className={"mt-10"}>
                         {accountSetting?.map((item) => (
                             <li key={item.id}
                                 className={"flex items-center gap-x-4 py-5 hover:scale-95 transition-all duration-100 cursor-pointer hover:text-primary-purple"}>
@@ -73,7 +138,42 @@ function Settings() {
                             </li>
                         ))}
 
-                    </ul>
+                    </ul>) : settings === "editName" ? (<div>
+                        <form className="max-w-sm mx-auto mt-10 font-poppins" onSubmit={handleSubmit}>
+                            <div className="mb-5">
+                                <label htmlFor="firstName"
+                                       className="block mb-2 text-lg font-semibold text-gray-900 ">First name</label>
+                                <input type="text" id="firstName"
+                                       onChange={handleInputChange}
+                                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                       placeholder="Enter your first name" required/>
+                            </div>
+                            <div className="mb-5">
+                                <label htmlFor="lastName"
+                                       className="block mb-2 text-lg font-semibold text-gray-900">Last name</label>
+                                <input type="text" id="lastName"
+                                       onChange={handleInputChange}
+                                       className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                       placeholder="Enter your last name" required/>
+                            </div>
+
+                            <button type="submit"
+                                    className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ">Submit
+                            </button>
+                        </form>
+                    </div>) : settings === "editBio" ? (<form className="max-w-sm mx-auto mt-10 font-poppins">
+                        <div className="mb-5">
+                            <label htmlFor="bio"
+                                   className="block mb-2 text-lg font-semibold text-gray-900 ">Set your Bio</label>
+                            <input type="text" id="bio"
+                                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                   placeholder="Max charecter 101   " required/>
+                        </div>
+                        <button type="submit"
+                                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ">Submit
+                        </button>
+                    </form>) : ""}
+
                 </div>
             </div>
         </div>

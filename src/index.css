@@ -2,102 +2,109 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 :root {
-  --primary-purple: #5f35f5; /* Vibrant Purple */
-  --dark-blue: #11175d; /* Dark Blue */
-  --dark-blue-v2: #03014c; /* Dark Blue v2 */
-  --black: #000000; /* Pure Black */
-  --white: #ffffff; /* Pure White */
-  --black-25: rgba(0, 0, 0, 0.25); /* Black 25% */
-  --black-50: rgba(0, 0, 0, 0.5); /* Black 50% */
-  --gray-dark: #4d4d4d; /* Dark Gray */
-  --white-50: rgba(255, 255, 255, 0.5); /* White 50% */
-  --gray-light: #cecece; /* Light Gray */
-  --white-70: rgba(255, 255, 255, 0.7); /* White 70% */
-  --neon-green: #00ff75; /* Bright Neon Green */
-  --gray-soft: #e3e5e8; /* Soft Gray */
-  --gray-medium: #3d3d3d; /* Medium Gray */
-  --gray-medium-35: rgba(61, 61, 61, 0.35); /* Medium Gray 35% */
-  --soft-purple: #bad1ff; /* Soft Pastel Purple */
-  /* Font */
-  --font-primary: "Poppins", sans-serif;
-  --font-secondary: "Nunito", sans-serif;
-  --font-tertiary: "Open Sans", sans-serif;
+    --primary-purple: #5f35f5; /* Vibrant Purple */
+    --dark-blue: #11175d; /* Dark Blue */
+    --dark-blue-v2: #03014c; /* Dark Blue v2 */
+    --black: #000000; /* Pure Black */
+    --white: #ffffff; /* Pure White */
+    --black-25: rgba(0, 0, 0, 0.25); /* Black 25% */
+    --black-50: rgba(0, 0, 0, 0.5); /* Black 50% */
+    --gray-dark: #4d4d4d; /* Dark Gray */
+    --white-50: rgba(255, 255, 255, 0.5); /* White 50% */
+    --gray-light: #cecece; /* Light Gray */
+    --white-70: rgba(255, 255, 255, 0.7); /* White 70% */
+    --neon-green: #00ff75; /* Bright Neon Green */
+    --gray-soft: #e3e5e8; /* Soft Gray */
+    --gray-medium: #3d3d3d; /* Medium Gray */
+    --gray-medium-35: rgba(61, 61, 61, 0.35); /* Medium Gray 35% */
+    --soft-purple: #bad1ff; /* Soft Pastel Purple */
+    /* Font */
+    --font-primary: "Poppins", sans-serif;
+    --font-secondary: "Nunito", sans-serif;
+    --font-tertiary: "Open Sans", sans-serif;
 }
+
 @theme {
-  --color-primary-purple: var(--primary-purple);
-  --color-dark-blue: var(--dark-blue);
-  --color-black: var(--black);
-  --color-white: var(--white);
-  --color-black-25: var(--black-25);
-  --color-black-50: var(--black-50);
-  --color-gray-dark: var(--gray-dark);
-  --color-white-50: var(--white-50);
-  --color-gray-light: var(--gray-light);
-  --color-white-70: var(--white-70);
-  --color-neon-green: var(--neon-green);
-  --color-gray-soft: var(--gray-soft);
-  --color-gray-medium: var(--gray-medium);
-  --color-gray-medium-35: var(--gray-medium-35);
-  --color-soft-purple: var(--soft-purple);
-  --color-dark-blue-v2: var(--dark-blue-v2);
-  /* Font */
-  --font-poppins: "Poppins", sans-serif;
-  --font-nunito: "Nunito", sans-serif;
-  --font-openSans: "Open Sans", sans-serif;
+    --color-primary-purple: var(--primary-purple);
+    --color-dark-blue: var(--dark-blue);
+    --color-black: var(--black);
+    --color-white: var(--white);
+    --color-black-25: var(--black-25);
+    --color-black-50: var(--black-50);
+    --color-gray-dark: var(--gray-dark);
+    --color-white-50: var(--white-50);
+    --color-gray-light: var(--gray-light);
+    --color-white-70: var(--white-70);
+    --color-neon-green: var(--neon-green);
+    --color-gray-soft: var(--gray-soft);
+    --color-gray-medium: var(--gray-medium);
+    --color-gray-medium-35: var(--gray-medium-35);
+    --color-soft-purple: var(--soft-purple);
+    --color-dark-blue-v2: var(--dark-blue-v2);
+    /* Font */
+    --font-poppins: "Poppins", sans-serif;
+    --font-nunito: "Nunito", sans-serif;
+    --font-openSans: "Open Sans", sans-serif;
 }
 @layer components {
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 15px;
-  }
-  .flexRowBetween {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .flexRowCenter {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  .flexCol {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .hoverEffect {
-    position: relative;
-    /*background-color: white;
-    */
-    width: 80%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px 50px;
-    border-radius: 20px 0 0 20px;
-    -webkit-border-radius: 20px 0 0 20px;
-    -moz-border-radius: 20px 0 0 20px;
-    -ms-border-radius: 20px 0 0 20px;
-    -o-border-radius: 20px 0 0 20px;
-  }
-  .hoverEffect::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 10px;
-    background-color: var(--primary-purple);
-    z-index: 1;
-    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
-      rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
-      rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
-    border-radius: 20px 0 0 20px;
-  }
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .flexRowBetween {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .flexRowCenter {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .flexCol {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hoverEffect {
+        position: relative;
+        /*background-color: white;
+        */
+        width: 80%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 50px;
+        border-radius: 20px 0 0 20px;
+        -webkit-border-radius: 20px 0 0 20px;
+        -moz-border-radius: 20px 0 0 20px;
+        -ms-border-radius: 20px 0 0 20px;
+        -o-border-radius: 20px 0 0 20px;
+    }
+
+    .hoverEffect::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 10px;
+        background-color: var(--primary-purple);
+        z-index: 1;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+        rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+        rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+        border-radius: 20px 0 0 20px;
+    }
 }
+
 @layer utilities {
-  .border-opacity-30 {
-    border-color: rgb(17, 23, 93, 0.3);
-  }
+    .border-opacity-30 {
+        border-color: rgb(17, 23, 93, 0.3);
+    }
 }
