@@ -44,7 +44,7 @@ const [friendlist, setFriendlist] = useState([]);
         setLoading(true)
         fetchData((userData)=>{
 
-            console.log(filteredUsers)
+            console.log(userData)
             setUser(userData);
             setLoading(false);
         }, "users/");
