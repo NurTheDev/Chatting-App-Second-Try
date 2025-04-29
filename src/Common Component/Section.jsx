@@ -1,13 +1,13 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { IoEllipsisVerticalSharp } from "react-icons/io5";
+import {IoEllipsisVerticalSharp} from "react-icons/io5";
 import User from "./User";
 import Skeleton from "./Skeleton";
 import avatar from "../assets/avatar.gif";
 import moment from "moment";
 import {getAuth} from "firebase/auth";
 // import { getDatabase, ref, onValue } from "firebase/database";
-const Section = ({ data, className, title, loadingState, buttonData, IDs }) => {
+const Section = ({data, className, title, loadingState, buttonData, IDs}) => {
     const auth = getAuth();
     const dataArray = Array.isArray(data) ? data : Object.values(data || {});
     const skeletonArray = Array(5).fill({});
@@ -17,12 +17,13 @@ const Section = ({ data, className, title, loadingState, buttonData, IDs }) => {
             <div className="flexRowBetween">
                 <div className={"flex gap-x-4 font-semibold justify-center items-center"}>
                     <h2 className="text-xl font-semibold font-poppins">{title}</h2>
-                    <span className={"font-poppins bg-primary-purple w-6 h-6 text-sm flex justify-center items-center text-white rounded-full"}>
+                    <span
+                        className={"font-poppins bg-primary-purple w-6 h-6 text-sm flex justify-center items-center text-white rounded-full"}>
             {loadingState ? '0' : data.length}
           </span>
                 </div>
                 <span className="cursor-pointer text-xl">
-          <IoEllipsisVerticalSharp />
+          <IoEllipsisVerticalSharp/>
         </span>
             </div>
             <div className={`mt-4 ${className}`}>
@@ -30,7 +31,7 @@ const Section = ({ data, className, title, loadingState, buttonData, IDs }) => {
                     <div>
                         {skeletonArray.map((_, index) => (
                             <div key={index}>
-                                <Skeleton />
+                                <Skeleton/>
                             </div>
                         ))}
                     </div>
@@ -39,11 +40,11 @@ const Section = ({ data, className, title, loadingState, buttonData, IDs }) => {
                         {dataArray.map((item, index) => (
                             <User
                                 key={item.id || index}
-                                uid={item.uid }
+                                uid={item.uid}
                                 IDs={IDs}
                                 email={item.email}
-                                img={item.isFriend && item.whomFriend?.uid !== auth.currentUser.uid ? (item?.whomFriend?.img): (item?.sender?.img ||item?.friend?.img || item.photoURL || item.avatar || avatar)}
-                                name={item.isFriend && item.whomFriend?.uid !== auth.currentUser.uid ? (item?.whomFriend?.name): item.name || item?.friend?.name || item.fullName || item?.sender?.name}
+                                img={item.isFriend && item.whomFriend?.uid !== auth.currentUser.uid ? (item?.whomFriend?.img) : (item?.sender?.img || item?.friend?.img || item?.photoURL || item.avatar || avatar)}
+                                name={item.isFriend && item.whomFriend?.uid !== auth.currentUser.uid ? (item?.whomFriend?.name) : item.name || item?.friend?.name || item.fullName || item?.sender?.name}
                                 message={item.message || item.email}
                                 time={item.time || moment(item.createdAt).fromNow() || "10:00 AM"}
                                 button={item.button || buttonData}
