@@ -6,8 +6,9 @@ import Skeleton from "./Skeleton";
 import avatar from "../assets/avatar.gif";
 import moment from "moment";
 import {getAuth} from "firebase/auth";
+import NoData from "./NoData.jsx";
 // import { getDatabase, ref, onValue } from "firebase/database";
-const Section = ({data, className, title, loadingState, buttonData, IDs}) => {
+const Section = ({data, className, title, loadingState, buttonData, IDs, rejectBtn}) => {
     const auth = getAuth();
     const dataArray = Array.isArray(data) ? data : Object.values(data || {});
     const skeletonArray = Array(5).fill({});
@@ -36,15 +37,16 @@ const Section = ({data, className, title, loadingState, buttonData, IDs}) => {
                         ))}
                     </div>
                 ) : (
-                    <div>
+                    dataArray && dataArray.length > 0 ? (<div>
                         {dataArray.map((item, index) => (
                             <User
                                 key={item.id || index}
                                 uid={item.uid}
                                 IDs={IDs}
+                                rejectionBtn={rejectBtn}
                                 email={item.email}
-                                img={item.isFriend && item.whomFriend?.uid !== auth.currentUser.uid ? (item?.whomFriend?.img) : (item?.sender?.img || item?.friend?.img || item?.photoURL || item.avatar || avatar)}
-                                name={item.isFriend && item.whomFriend?.uid !== auth.currentUser.uid ? (item?.whomFriend?.name) : item.name || item?.friend?.name || item.fullName || item?.sender?.name}
+                                img={item.isFriend && item.whomFriend?.uid === auth.currentUser.uid ? (item?.whomFriend?.img) : (item?.sender?.img || item?.friend?.img || item?.photoURL || item.avatar || avatar)}
+                                name={item.isFriend && item.whomFriend?.uid === auth.currentUser.uid ? (item?.whomFriend?.name) : item.name || item?.friend?.name || item.fullName || item?.sender?.name}
                                 message={item.message || item.email}
                                 time={item.time || moment(item.createdAt).fromNow() || "10:00 AM"}
                                 button={item.button || buttonData}
@@ -56,7 +58,7 @@ const Section = ({data, className, title, loadingState, buttonData, IDs}) => {
                                 }
                             />
                         ))}
-                    </div>
+                    </div>) : (<NoData/>)
                 )}
             </div>
         </div>
@@ -69,7 +71,8 @@ Section.propTypes = {
     title: PropTypes.string.isRequired,
     loadingState: PropTypes.bool,
     buttonData: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-    IDs: PropTypes.oneOfType([PropTypes.string, PropTypes.array])
+    IDs: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+    rejectBtn: PropTypes.bool,
 };
 
 export default Section;

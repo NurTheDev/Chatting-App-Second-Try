@@ -6,12 +6,13 @@ import moment from "moment";
 import {Slide, toast} from "react-toastify";
 import fetchData from "../lib/helper.js";
 
-const User = ({img, name, message, button, time, className, uid, email, IDs, userData}) => {
+const User = ({img, name, message, button, time, className, uid, email, rejectionBtn, userData}) => {
     const auth = getAuth();
-
+    // console.log(rejectionBtn)
     const [activeUser, setActiveUser] = useState([]);
     // const [loacalUsrId , setLocalUserId] = useState(null);
     const [buttonState, setButtonState] = React.useState(false);
+    const [showMore, setShowMore] = useState(false);
     const db = getDatabase();
     useEffect(() => {
         fetchData((userData) => {
@@ -21,7 +22,6 @@ const User = ({img, name, message, button, time, className, uid, email, IDs, use
             setActiveUser(currentUserData);
         }, "users/", "owner");
     }, []);
-
     const handleAccept = () => {
         if (button === "Accept" && userData) {
             set(ref(db, 'FriendList/' + userData.receiver.uid), {
@@ -52,6 +52,10 @@ const User = ({img, name, message, button, time, className, uid, email, IDs, use
                             console.log("Friend List Updated")
                         })
                     ));
+                }).then(() => {
+                    set(ref(db, 'Notification/' + userData.sender.uid), {
+                        message: `${activeUser[0]?.fullName || auth.currentUser.displayName} accepted your friend request`,
+                    })
                 })
                 toast.success('Friend Request Accepted', {
                     position: "top-right",
@@ -67,7 +71,53 @@ const User = ({img, name, message, button, time, className, uid, email, IDs, use
             });
         }
     };
+    const handleReject = () => {
+        if (userData && userData.receiver && userData.sender) {
+            remove(ref(db, 'FriendRequest/' + userData.receiver.uid)).then(() => {
+                toast.error('Friend Request Rejected', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Slide,
+                });
+            }).then(() => {
+                set(ref(db, 'Notification/' + data.uid), {
+                    message: `${activeUser[0]?.fullName || auth.currentUser.displayName} rejected your friend request`,
+                })
+            }).catch(err => console.log("Error in removing friend request", err));
+        }
+    }
     const handleButton = (data) => {
+        // console.log(data.target.textContent.includes("Unfriend"))
+        if (data?.target?.textContent.includes("Unfriend")) {
+            setButtonState(false);
+            remove(ref(db, 'FriendList/' + userData.whomFriend?.uid)).then(() => {
+                toast.success('Unfriend Successfully', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Slide,
+                });
+            }).then(() => {
+                set(ref(db, 'Notification/' + data.uid), {
+                    message: `${activeUser[0]?.fullName || auth.currentUser.displayName} unfriended you`,
+                })
+            })
+        }
+        if (button === "More") {
+            // Handle the more action here
+            setShowMore(!showMore);
+        }
         if (button === "Accept") {
             handleAccept();
         } else {
@@ -89,7 +139,10 @@ const User = ({img, name, message, button, time, className, uid, email, IDs, use
                     },
                     createdAt: moment().toISOString(),
                     sentRequest: true,
-                    notification: `${activeUser[0]?.fullName || auth.currentUser.displayName} sent you a friend request`,
+                }).then(() => {
+                    set(ref(db, 'Notification/' + data.uid), {
+                        message: `${activeUser[0]?.fullName || auth.currentUser.displayName} sent you a friend request`,
+                    })
                 }).then(() => {
                     toast.success('Request sent successfully', {
                         position: "top-right",
@@ -124,7 +177,7 @@ const User = ({img, name, message, button, time, className, uid, email, IDs, use
     };
     return (
         <div
-            className={`flex justify-between mx-5 items-center gap-4 font-poppins py-4  cursor-pointer hover:shadow-md ${className}`}
+            className={`flex justify-between mx-5 items-center gap-4 font-poppins py-4 cursor-pointer hover:shadow-md ${className}`}
         >
             <div className="flex gap-4 items-center">
                 <div>
@@ -139,19 +192,62 @@ const User = ({img, name, message, button, time, className, uid, email, IDs, use
                     )}
                 </div>
             </div>
-            {time && button ? (
-                <button onClick={() => handleButton({
-                    uid: uid,
-                    name: name,
-                    img: img,
-                    email: email,
-                })}
-                        className="text-white p-2 bg-primary-purple text-xl font-semibold rounded-md min-w-12 hover:scale-95 transition-all duration-200">
-                    {button === "Accept" ? "Accept" : (buttonState ? "Cancel" : button)}
-                </button>
-            ) : (
-                <p className="text-sm text-gray-dark">{time}</p>
-            )}
+            <div className="flex gap-2">
+                {time && button && (
+                    <button
+                        onClick={() => handleButton({
+                            uid: uid,
+                            name: name,
+                            img: img,
+                            email: email,
+                        })}
+                        className="text-white p-2 bg-primary-purple text-xl font-semibold rounded-md min-w-12 hover:scale-95 transition-all duration-200"
+                    >
+                        {button === "Accept" ? "Accept" : (buttonState ? "Cancel" : button)}
+                    </button>
+                )}
+                {showMore && (
+                    <div className={"relative"}>
+                        <div
+                            className={"absolute right-0 -top-5 w-40 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-10 "}>
+                            <button
+                                onClick={() => setShowMore(false)}
+                                className="absolute top-1 right-1 flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                            >
+                                <span className="text-xs font-medium">✕</span>
+                            </button>
+                            <ul className={"space-y-2 mt-4 "}>
+                                <li className={"hover:bg-gray-100 rounded px-3 py-2 transition-colors flex items-center"}>
+                                    <i className="mr-2 text-sm">👤</i> View profile
+                                </li>
+                                <li className={"hover:bg-gray-100 rounded px-3 py-2 transition-colors flex items-center"}>
+                                    <i className="mr-2 text-sm">💬</i> Message
+                                </li>
+                                <li className={"hover:bg-gray-100 rounded px-3 py-2 transition-colors flex items-center"}>
+                                    <i className="mr-2 text-sm">🚫</i> Block
+                                </li>
+                                <li onClick={
+                                    handleButton
+                                } className={"hover:bg-gray-100 rounded px-3 py-2 transition-colors flex items-center"}>
+                                    <i className="mr-2 text-sm">❌</i> Unfriend
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                )}
+                {rejectionBtn && button === "Accept" && (
+                    <button
+                        onClick={handleReject}
+                        className="text-white p-2 bg-red-500 text-xl font-semibold rounded-md min-w-12 hover:scale-95 transition-all duration-200"
+                    >
+                        Reject
+                    </button>
+                )}
+                {!time && !button && (
+                    <p className="text-sm text-gray-dark">{time}</p>
+                )}
+            </div>
         </div>
     );
 };
@@ -166,5 +262,6 @@ User.propTypes = {
     email: PropTypes.string,
     IDs: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
     userData: PropTypes.object,
+    rejectionBtn: PropTypes.bool,
 };
 export default User;

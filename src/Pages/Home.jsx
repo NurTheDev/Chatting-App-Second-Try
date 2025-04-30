@@ -44,22 +44,6 @@ const Home = () => {
         }, "users/");
     }, []);
     useEffect(() => {
-        if (friendRequest && friendRequest.length > 0) {
-            const userIDs = friendRequest.map(request => request?.id);
-            setRequestID(userIDs[0]);
-        }
-    }, [friendRequest]);
-
-    useEffect(() => {
-        setLoading(true)
-        fetchData((userData) => {
-            setUser(userData);
-            setLoading(false);
-        }, "users/");
-    }, []);
-
-    // Filter user list to remove users already in friendlist and the current user
-    useEffect(() => {
         if (user.length && friendlist.length) {
             const friendIds = friendlist.map(friend => {
                 return friend.friend?.uid === auth.currentUser.uid
@@ -95,7 +79,7 @@ const Home = () => {
                     title={"Friends"}
                     data={friendlist}
                     loadingState={loading}
-                    buttonData={"block"}
+                    buttonData={"More"}
                     className={
                         "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
                     }
@@ -117,6 +101,7 @@ const Home = () => {
                 <Section
                     title={"Friend  Request"}
                     data={friendRequest}
+                    rejectBtn={true}
                     loadingState={loading}
                     buttonData={"Accept"}
                     className={
