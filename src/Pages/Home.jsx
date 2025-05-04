@@ -4,7 +4,7 @@ import Section from "../Common Component/Section";
 import {getAuth} from "firebase/auth";
 import {blockList, groupList,} from "../lib/Data";
 import fetchData from "../lib/helper.js";
-import {IoCloseCircleOutline} from "react-icons/io5";
+import {IoMdClose} from "react-icons/io";
 
 const Home = () => {
     const auth = getAuth();
@@ -19,10 +19,10 @@ const Home = () => {
     useEffect(() => {
         setLoading(true)
         fetchData((friendlist) => {
-           const filteredFriendlist = friendlist.filter((friend) => {
-               const userFriend = friend.id.includes(auth.currentUser.uid);
-               return userFriend ? friend : null;
-           })
+            const filteredFriendlist = friendlist.filter((friend) => {
+                const userFriend = friend.id.includes(auth.currentUser.uid);
+                return userFriend ? friend : null;
+            })
             setFriendlist(filteredFriendlist);
             setLoading(false);
         }, "FriendList/");
@@ -70,91 +70,131 @@ const Home = () => {
     }, [user, friendlist]);
 
     return (
-       <div className={"relative"}>
-           <div className="grid grid-cols-3 justify-center items-center gap-x-5 w-full">
-               <div className="w-full">
-                   <Searchbar/>
-                   <Section
-                       title={"Group List"}
-                       data={groupList}
-                       className={
-                           "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[32vh]"
-                       }
-                   />
-               </div>
-               <>
-                   <Section
-                       title={"Friends"}
-                       data={friendlist}
-                       loadingState={loading}
-                       buttonData={"More"}
-                       className={
-                           "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
-                       }
-                   />
-               </>
-               <>
-                   <Section
-                       title={"User List"}
-                       data={filteredUsers}
-                       loadingState={loading}
-                       IDs={requestID ? requestID : null}
-                       buttonData={"+"}
-                       className={
-                           "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
-                       }
-                   />
-               </>
-               <>
-                   <Section
-                       title={"Friend  Request"}
-                       data={friendRequest}
-                       rejectBtn={true}
-                       loadingState={loading}
-                       buttonData={"Accept"}
-                       className={
-                           "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
-                       }
-                   />
-               </>
-               <>
-                   <Section
-                       title={" Group"}
-                       data={user}
-                       group={true}
-                       groupState ={setCreateGroup}
-                       className={
-                           "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
-                       }
-                   />
-               </>
-               <>
-                   <Section
-                       title={"Blocked Users"}
-                       data={blockList}
-                       className={
-                           "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
-                       }
-                   />
-               </>
-           </div>
-           <div
-                className="absolute top-1/2 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-               <div className="relative p-4 w-full max-w-md max-h-full">
-                   <div className="relative bg-white rounded-lg shadow-sm">
-                       <button type="button"
-                               className="absolute top-3 end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center">
-                           <IoCloseCircleOutline className={"text-3xl"}/>
-                           <span className="sr-only">Close modal</span>
-                       </button>
-                       <div className="p-4 md:p-5 text-center">
-                           <h3 className="mb-5 text-lg font-normal text-gray-500 ">Are you sure
-                               you want to delete this product?</h3>
-                       </div>
-                   </div>
-               </div>
-           </div>
-       </div>
+        <div className={"relative"}>
+            <div className="grid grid-cols-3 justify-center items-center gap-x-5 w-full">
+                <div className="w-full">
+                    <Searchbar/>
+                    <Section
+                        title={"Group List"}
+                        data={groupList}
+                        className={
+                            "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[32vh]"
+                        }
+                    />
+                </div>
+                <>
+                    <Section
+                        title={"Friends"}
+                        data={friendlist}
+                        loadingState={loading}
+                        buttonData={"More"}
+                        className={
+                            "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
+                        }
+                    />
+                </>
+                <>
+                    <Section
+                        title={"User List"}
+                        data={filteredUsers}
+                        loadingState={loading}
+                        IDs={requestID ? requestID : null}
+                        buttonData={"+"}
+                        className={
+                            "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
+                        }
+                    />
+                </>
+                <>
+                    <Section
+                        title={"Friend  Request"}
+                        data={friendRequest}
+                        rejectBtn={true}
+                        loadingState={loading}
+                        buttonData={"Accept"}
+                        className={
+                            "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
+                        }
+                    />
+                </>
+                <>
+                    <Section
+                        title={" Group"}
+                        data={user}
+                        group={true}
+                        groupState={setCreateGroup}
+                        className={
+                            "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
+                        }
+                    />
+                </>
+                <>
+                    <Section
+                        title={"Blocked Users"}
+                        data={blockList}
+                        className={
+                            "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
+                        }
+                    />
+                </>
+            </div>
+            <div>
+                {createGroup && (
+                    <div
+                        className="fixed top-0 left-0 w-full h-full bg-black-50 bg-opacity-50 flex justify-center items-center font-poppins">
+                        <div className="bg-white p-5 rounded-lg shadow-lg">
+                            <div className={"flex justify-between items-center mb-4"}>
+                                <h2 className="text-xl font-semibold mb-4 ">Create Group</h2>
+                                <button onClick={() => setCreateGroup(false)}>
+                                    <IoMdClose
+                                        className={"text-2xl text-primary-purple hover:rotate-90 transition duration-100 hover:scale-75 cursor-pointer hover:text-red-700"}/>
+                                </button>
+                            </div>
+
+                            {/* Add your group creation form here */}
+                            <form>
+                                <input
+                                    type="text"
+                                    placeholder="Group Name"
+                                    className="border border-gray-300 p-2 rounded w-full mb-4"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Add a Group title"
+                                    className="border border-gray-300 p-2 rounded w-full mb-4"
+                                />
+
+                                <div className="flex items-center justify-center w-full">
+                                    <label htmlFor="dropzone-file"
+                                           className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <svg className="w-8 h-8 mb-4 text-gray-500"
+                                                 aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                 viewBox="0 0 20 16">
+                                                <path stroke="currentColor" strokeLinecap="round"
+                                                      strokeLinejoin="round" strokeWidth="2"
+                                                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                            </svg>
+                                            <p className="mb-2 text-sm text-gray-500 "><span
+                                                className="font-semibold">Click to upload</span> or drag and drop</p>
+                                            <p className="text-xs text-gray-500">SVG, PNG, JPG or GIF</p>
+                                        </div>
+                                        <input id="dropzone-file" type="file" className="hidden"/>
+                                    </label>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="bg-blue-500 text-white px-4 py-2 rounded mt-5"
+                                >
+                                    Create Group
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
     );
 };
 

@@ -12,9 +12,9 @@ const Section = ({data, className, title, loadingState, buttonData, IDs, rejectB
     const auth = getAuth();
     const dataArray = Array.isArray(data) ? data : Object.values(data || {});
     const skeletonArray = Array(5).fill({});
-const handleClick = () => {
-    groupState(false)
-}
+    const handleClick = () => {
+        groupState(true)
+    }
     return (
         <div className="mt-8 px-5 rounded-[20px] bg-white shadow-lg w-full">
             <div className="flexRowBetween">
@@ -25,10 +25,13 @@ const handleClick = () => {
             {loadingState ? '0' : data.length}
           </span>
                 </div>
-                {group ? (<button onClick={handleClick} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center">
+                {group ? (<button onClick={handleClick} type="button"
+                                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center">
                     Create group
-                    <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                    <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
+                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                              d="M1 5h12m0 0L9 1m4 4L9 9"/>
                     </svg>
                 </button>) : (<span className="cursor-pointer text-xl">
           <IoEllipsisVerticalSharp/>
