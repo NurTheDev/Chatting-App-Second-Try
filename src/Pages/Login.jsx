@@ -23,14 +23,6 @@ import inputData, { useTogglePasswordVisibility } from "../lib/inputData";
 const Login = () => {
 
   const auth = getAuth();
-  // const [authLoaded, setAuthLoaded] = useState(false);
-  // const [currentUser, setCurrentUser] = useState(null);
-  //   useEffect(() => {
-  //       onAuthStateChanged(auth, (user)=>{
-  //           setCurrentUser(user);
-  //           setAuthLoaded(true);
-  //       })
-  //   }, [auth]);
   const { showPassword, toggleShowPassword } = useTogglePasswordVisibility();
   const [loading, setLoading] = useState(false);
   const [formValues, setFormValues] = useState({

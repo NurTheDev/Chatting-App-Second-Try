@@ -8,9 +8,7 @@ import fetchData from "../lib/helper.js";
 
 const User = ({img, name, message, button, time, className, uid, email, rejectionBtn, userData}) => {
     const auth = getAuth();
-    // console.log(rejectionBtn)
     const [activeUser, setActiveUser] = useState([]);
-    // const [loacalUsrId , setLocalUserId] = useState(null);
     const [buttonState, setButtonState] = React.useState(false);
     const [showMore, setShowMore] = useState(false);
     const db = getDatabase();
@@ -24,7 +22,7 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
     }, []);
     const handleAccept = () => {
         if (button === "Accept" && userData) {
-            set(ref(db, 'FriendList/' + userData.receiver.uid), {
+            set(ref(db, 'FriendList/' + userData.id), {
                 id: userData.sender.uid + auth.currentUser.uid,
                 friend: {
                     name: userData.sender.name,
@@ -42,7 +40,6 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                 isFriend: true,
             }).then(() => {
                 remove(ref(db, 'FriendRequest/' + userData.receiver.uid)).then(() => {
-                    console.log(userData.receiver.uid, userData.sender.uid, auth.currentUser.uid);
                     update(ref(db, "users/" + userData.receiver.uid), {
                         isFriend: true,
                     }).then(() => (
@@ -53,8 +50,10 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                         })
                     ));
                 }).then(() => {
-                    set(ref(db, 'Notification/' + userData.sender.uid), {
-                        message: `${activeUser[0]?.fullName || auth.currentUser.displayName} accepted your friend request`,
+                    set(ref(db, 'Notification/' + userData.id), {
+                        notification : {
+                            message1: `${activeUser[0]?.fullName || auth.currentUser.displayName} accepted your friend request`,
+                        }
                     })
                 })
                 toast.success('Friend Request Accepted', {
@@ -87,7 +86,9 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                 });
             }).then(() => {
                 set(ref(db, 'Notification/' + data.uid), {
-                    message: `${activeUser[0]?.fullName || auth.currentUser.displayName} rejected your friend request`,
+                    notification : {
+                        message2: `${activeUser[0]?.fullName || auth.currentUser.displayName} rejected your friend request`,
+                    }
                 })
             }).catch(err => console.log("Error in removing friend request", err));
         }
@@ -110,7 +111,9 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                 });
             }).then(() => {
                 set(ref(db, 'Notification/' + data.uid), {
-                    message: `${activeUser[0]?.fullName || auth.currentUser.displayName} unfriended you`,
+                    notification : {
+                        message3: `${activeUser[0]?.fullName || auth.currentUser.displayName} unfriended you`,
+                    }
                 })
             })
         }
@@ -141,7 +144,11 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                     sentRequest: true,
                 }).then(() => {
                     set(ref(db, 'Notification/' + data.uid), {
-                        message: `${activeUser[0]?.fullName || auth.currentUser.displayName} sent you a friend request`,
+                        notification : {
+                            message: `${activeUser[0]?.fullName || auth.currentUser.displayName} sent you a friend request`,
+                        }
+                    }).then(() => {
+                        console.log("Notification sent")
                     })
                 }).then(() => {
                     toast.success('Request sent successfully', {
