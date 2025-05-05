@@ -15,7 +15,40 @@ const Home = () => {
     const [friendlist, setFriendlist] = useState([]);
     const [requestID, setRequestID] = useState(null);
     const [createGroup, setCreateGroup] = React.useState(false);
-
+    const [inputValue, setInputValue] = useState({
+        groupName: "",
+        groupTitle: "",
+        groupImage: null,
+    });
+    const [groupError, setGroupError] = useState({
+        groupName: "",
+        groupTitle: "",
+        groupImage: "",
+    })
+    console.log(inputValue.groupImage, inputValue.groupName)
+    const handleInputChange = (e) => {
+        const {name, value} = e.target;
+        setInputValue((prev) => (
+            {...prev, [name]: name === "groupImage" ? e.target.files[0] : value}
+        ))
+        setGroupError((prev) => ({
+            ...prev,
+            [name]: value ? "" : "This field is required",
+        }))
+    }
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        console.log("inputValue", inputValue);
+        const newError = {};
+        Object.keys(inputValue).forEach(key => {
+            if (!inputValue[key]) {
+                newError[key] = "This field must be filled";
+            } else if (key === "groupImage" && !inputValue[key].name.match(/\.(jpg|jpeg|png|gif)$/)) {
+                newError[key] = "Invalid image format";
+            }
+        })
+        setGroupError(newError);
+    }
     useEffect(() => {
         setLoading(true)
         fetchData((friendlist) => {
@@ -37,7 +70,6 @@ const Home = () => {
             setLoading(false);
         }, "FriendRequest/");
     }, []);
-    console.log("friendRequest", friendRequest);
     useEffect(() => {
         if (friendRequest && friendRequest.length > 0) {
             const userIDs = friendRequest.map(request => request?.id);
@@ -142,7 +174,7 @@ const Home = () => {
                 {createGroup && (
                     <div
                         className="fixed top-0 left-0 w-full h-full bg-black-50 bg-opacity-50 flex justify-center items-center font-poppins">
-                        <div className="bg-white p-5 rounded-lg shadow-lg">
+                        <div className="bg-white p-5 rounded-lg shadow-lg w-1/3">
                             <div className={"flex justify-between items-center mb-4"}>
                                 <h2 className="text-xl font-semibold mb-4 ">Create Group</h2>
                                 <button onClick={() => setCreateGroup(false)}>
@@ -152,14 +184,25 @@ const Home = () => {
                             </div>
 
                             {/* Add your group creation form here */}
-                            <form>
+                            <form onSubmit={handleSubmit}>
+                                {groupError.groupName && (
+                                    <p className="text-red-500 text-sm">{groupError.groupName}</p>
+                                )}
                                 <input
+                                    name="groupName"
                                     type="text"
+                                    onChange={handleInputChange}
                                     placeholder="Group Name"
                                     className="border border-gray-300 p-2 rounded w-full mb-4"
                                 />
+
+                                {groupError.groupTitle && (
+                                    <p className="text-red-500 text-sm">{groupError.groupTitle}</p>
+                                )}
                                 <input
+                                    name="groupTitle"
                                     type="text"
+                                    onChange={handleInputChange}
                                     placeholder="Add a Group title"
                                     className="border border-gray-300 p-2 rounded w-full mb-4"
                                 />
@@ -178,14 +221,17 @@ const Home = () => {
                                             <p className="mb-2 text-sm text-gray-500 "><span
                                                 className="font-semibold">Click to upload</span> or drag and drop</p>
                                             <p className="text-xs text-gray-500">SVG, PNG, JPG or GIF</p>
+                                            {groupError.groupImage && (
+                                                <p className="text-red-500 text-sm mt-4">{groupError.groupImage}</p>
+                                            )}
                                         </div>
-                                        <input id="dropzone-file" type="file" className="hidden"/>
+                                        <input onChange={handleInputChange} name="groupImage" id="dropzone-file"
+                                               type="file" className="hidden"/>
                                     </label>
                                 </div>
-
                                 <button
                                     type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded mt-5"
+                                    className="bg-blue-500 text-white px-4 py-2 rounded mt-5 font-semibold hover:bg-blue-600 transition duration-200"
                                 >
                                     Create Group
                                 </button>
