@@ -25,7 +25,6 @@ const Home = () => {
         groupTitle: "",
         groupImage: "",
     })
-    console.log(inputValue.groupImage, inputValue.groupName)
     const handleInputChange = (e) => {
         const {name, value} = e.target;
         setInputValue((prev) => (
@@ -36,9 +35,8 @@ const Home = () => {
             [name]: value ? "" : "This field is required",
         }))
     }
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log("inputValue", inputValue);
         const newError = {};
         Object.keys(inputValue).forEach(key => {
             if (!inputValue[key]) {
@@ -48,6 +46,24 @@ const Home = () => {
             }
         })
         setGroupError(newError);
+        if (Object.keys(newError).length === 0) {
+            const formData = new FormData();
+            formData.append("upload_preset", import.meta.env.CLOUDE_PRESET);
+            formData.append("groupImage", inputValue.groupImage);
+            const cloudinaryURL = `https://api.cloudinary.com/v1_1/${import.meta.env.CLOUD_NAME}/image/upload`;
+            console.log("Form data ready for submission:", formData);
+            // Add your API call here to submit the form data
+            try {
+                const response = await fetch(cloudinaryURL, {
+                    method: "POST",
+                    body: formData,
+                })
+                const data = await response.json();
+                console.log("Image uploaded successfully:", data);
+            } catch (error) {
+                console.error("Error uploading image:", error);
+            }
+        }
     }
     useEffect(() => {
         setLoading(true)
