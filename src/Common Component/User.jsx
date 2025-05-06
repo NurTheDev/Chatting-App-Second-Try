@@ -126,7 +126,8 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
         } else {
             // Handle the add friend action here
             if (!buttonState) {
-                set(ref(db, 'FriendRequest/' + data.uid), {
+                console.log(data.uid)
+                set(ref(db, 'FriendRequest/' + data.uid + auth.currentUser.uid), {
                     id: data.uid + auth.currentUser.uid,
                     sender: {
                         name: activeUser[0]?.fullName || auth.currentUser.displayName,
@@ -143,7 +144,7 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                     createdAt: moment().toISOString(),
                     sentRequest: true,
                 }).then(() => {
-                    set(ref(db, 'Notification/' + data.uid), {
+                    set(ref(db, 'Notification/' + data.uid + auth.currentUser.uid), {
                         notification : {
                             message: `${activeUser[0]?.fullName || auth.currentUser.displayName} sent you a friend request`,
                         }
@@ -165,7 +166,7 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                     setButtonState(true);
                 });
             } else if (buttonState) {
-                remove(ref(db, 'FriendRequest/' + data.uid)).then(() => {
+                remove(ref(db, 'FriendRequest/' + data.uid + auth.currentUser.uid)).then(() => {
                     toast.error('Friend Request Canceled', {
                         position: "top-right",
                         autoClose: 5000,

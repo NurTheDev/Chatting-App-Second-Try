@@ -37,8 +37,6 @@ const Home = () => {
             [name]: value ? "" : "This field is required",
         }))
     }
-    // console.log("Cloudinary name" + import.meta.env.VITE_CLOUDE_NAME);
-    // console.log("Cloudinary preset" + import.meta.env.VITE_CLOUDE_PRESET);
     const handleSubmit = async (e) => {
         e.preventDefault()
         const newError = {};
@@ -69,7 +67,7 @@ const Home = () => {
                     groupImage: null,
                 })
                 setUploadLoading(false);
-
+                console.log("Image uploaded successfully:", data);
             } catch (error) {
                 console.error("Error uploading image:", error);
                 setGroupError((prev) => ({
