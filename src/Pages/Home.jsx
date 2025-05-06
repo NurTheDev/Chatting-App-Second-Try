@@ -5,6 +5,7 @@ import {getAuth} from "firebase/auth";
 import {blockList, groupList,} from "../lib/Data";
 import fetchData from "../lib/helper.js";
 import {IoMdClose} from "react-icons/io";
+import {ScaleLoader} from "react-spinners";
 
 const Home = () => {
     const auth = getAuth();
@@ -14,6 +15,7 @@ const Home = () => {
     const [friendRequest, setFriendRequest] = useState([]);
     const [friendlist, setFriendlist] = useState([]);
     const [requestID, setRequestID] = useState(null);
+    const [uploadLoading, setUploadLoading] = useState(false);
     const [createGroup, setCreateGroup] = React.useState(false);
     const [inputValue, setInputValue] = useState({
         groupName: "",
@@ -35,23 +37,25 @@ const Home = () => {
             [name]: value ? "" : "This field is required",
         }))
     }
+    // console.log("Cloudinary name" + import.meta.env.VITE_CLOUDE_NAME);
+    // console.log("Cloudinary preset" + import.meta.env.VITE_CLOUDE_PRESET);
     const handleSubmit = async (e) => {
         e.preventDefault()
         const newError = {};
         Object.keys(inputValue).forEach(key => {
             if (!inputValue[key]) {
                 newError[key] = "This field must be filled";
-            } else if (key === "groupImage" && !inputValue[key].name.match(/\.(jpg|jpeg|png|gif)$/)) {
+            } else if (key === "groupImage" && inputValue[key] && !inputValue[key].name.match(/\.(jpg|jpeg|png|gif)$/)) {
                 newError[key] = "Invalid image format";
             }
         })
         setGroupError(newError);
-        if (Object.keys(newError).length === 0) {
+        if (Object.keys(newError).length === 0 && inputValue.groupImage) {
+            setUploadLoading(true);
             const formData = new FormData();
-            formData.append("upload_preset", import.meta.env.CLOUDE_PRESET);
-            formData.append("groupImage", inputValue.groupImage);
-            const cloudinaryURL = `https://api.cloudinary.com/v1_1/${import.meta.env.CLOUD_NAME}/image/upload`;
-            console.log("Form data ready for submission:", formData);
+            formData.append("upload_preset", import.meta.env.VITE_CLOUDE_PRESET);
+            formData.append("file", inputValue.groupImage);
+            const cloudinaryURL = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDE_NAME}/image/upload`;
             // Add your API call here to submit the form data
             try {
                 const response = await fetch(cloudinaryURL, {
@@ -59,9 +63,23 @@ const Home = () => {
                     body: formData,
                 })
                 const data = await response.json();
-                console.log("Image uploaded successfully:", data);
+                setInputValue({
+                    groupName: "",
+                    groupTitle: "",
+                    groupImage: null,
+                })
+                setUploadLoading(false);
+
             } catch (error) {
                 console.error("Error uploading image:", error);
+                setGroupError((prev) => ({
+                    ...prev,
+                    groupImage: "Failed to upload image",
+                }))
+                setUploadLoading(false);
+                setCreateGroup(true);
+            } finally {
+                setCreateGroup(false);
             }
         }
     }
@@ -119,7 +137,17 @@ const Home = () => {
 
     return (
         <div className={"relative"}>
-            <div className="grid grid-cols-3 justify-center items-center gap-x-5 w-full">
+            {uploadLoading && (<ScaleLoader
+                color="#5f35f5"
+                height={55}
+                loading
+                margin={5}
+                radius={50}
+                speedMultiplier={2}
+                width={20}
+                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10"
+            />)}
+            <div className={`grid grid-cols-3 justify-center items-center gap-x-5 w-full $`}>
                 <div className="w-full">
                     <Searchbar/>
                     <Section
@@ -130,29 +158,25 @@ const Home = () => {
                         }
                     />
                 </div>
-                <>
-                    <Section
-                        title={"Friends"}
-                        data={friendlist}
-                        loadingState={loading}
-                        buttonData={"More"}
-                        className={
-                            "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
-                        }
-                    />
-                </>
-                <>
-                    <Section
-                        title={"User List"}
-                        data={filteredUsers}
-                        loadingState={loading}
-                        IDs={requestID ? requestID : null}
-                        buttonData={"+"}
-                        className={
-                            "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
-                        }
-                    />
-                </>
+                <Section
+                    title={"Friends"}
+                    data={friendlist}
+                    loadingState={loading}
+                    buttonData={"More"}
+                    className={
+                        "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
+                    }
+                />
+                <Section
+                    title={"User List"}
+                    data={filteredUsers}
+                    loadingState={loading}
+                    IDs={requestID ? requestID : null}
+                    buttonData={"+"}
+                    className={
+                        "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
+                    }
+                />
                 <>
                     <Section
                         title={"Friend  Request"}
@@ -165,26 +189,22 @@ const Home = () => {
                         }
                     />
                 </>
-                <>
-                    <Section
-                        title={" Group"}
-                        data={user}
-                        group={true}
-                        groupState={setCreateGroup}
-                        className={
-                            "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
-                        }
-                    />
-                </>
-                <>
-                    <Section
-                        title={"Blocked Users"}
-                        data={blockList}
-                        className={
-                            "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
-                        }
-                    />
-                </>
+                <Section
+                    title={" Group"}
+                    data={user}
+                    group={true}
+                    groupState={setCreateGroup}
+                    className={
+                        "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
+                    }
+                />
+                <Section
+                    title={"Blocked Users"}
+                    data={blockList}
+                    className={
+                        "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
+                    }
+                />
             </div>
             <div>
                 {createGroup && (
