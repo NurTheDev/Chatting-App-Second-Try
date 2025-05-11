@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React, {useEffect, useState} from "react";
-import {getDatabase, ref, remove, set, update} from "firebase/database";
+import {getDatabase, push, ref, remove, set, update} from "firebase/database";
 import {getAuth} from "firebase/auth";
 import moment from "moment";
 import {Slide, toast} from "react-toastify";
@@ -50,10 +50,8 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                         })
                     ));
                 }).then(() => {
-                    set(ref(db, 'Notification/' + userData.id), {
-                        notification : {
-                            message1: `${activeUser[0]?.fullName || auth.currentUser.displayName} accepted your friend request`,
-                        }
+                    set(push(ref(db, 'Notification/')), {
+                        message: `${activeUser[0]?.fullName || auth.currentUser.displayName} accepted your friend request`,
                     })
                 })
                 toast.success('Friend Request Accepted', {
@@ -85,10 +83,8 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                     transition: Slide,
                 });
             }).then(() => {
-                set(ref(db, 'Notification/' + data.uid), {
-                    notification : {
-                        message2: `${activeUser[0]?.fullName || auth.currentUser.displayName} rejected your friend request`,
-                    }
+                set(push(ref(db, 'Notification/')), {
+                    message: `${activeUser[0]?.fullName || auth.currentUser.displayName} rejected your friend request`,
                 })
             }).catch(err => console.log("Error in removing friend request", err));
         }
