@@ -39,7 +39,7 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                 createdAt: moment().toISOString(),
                 isFriend: true,
             }).then(() => {
-                remove(ref(db, 'FriendRequest/' + userData.receiver.uid)).then(() => {
+                remove(ref(db, 'FriendRequest/' + userData.id)).then(() => {
                     update(ref(db, "users/" + userData.receiver.uid), {
                         isFriend: true,
                     }).then(() => (
