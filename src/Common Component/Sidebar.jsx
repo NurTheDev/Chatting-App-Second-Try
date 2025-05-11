@@ -25,7 +25,6 @@ const Sidebar = () => {
     const navigate = useNavigate();
     const [avatar, setAvatar] = useState(defultAvatar)
     const [currentUser, setCurrentUser] = useState(null);
-    // Load avatar from local storage if it exists
     useEffect(() => {
         const unsubscribed = onAuthStateChanged(auth, (authUser) => {
             if (authUser) {
