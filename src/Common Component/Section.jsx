@@ -55,8 +55,8 @@ const Section = ({data, className, title, loadingState, buttonData, IDs, rejectB
                                 IDs={IDs}
                                 rejectionBtn={rejectBtn}
                                 email={item.email}
-                                img={item.isFriend && item.whomFriend?.uid === auth.currentUser.uid ? (item?.friend?.img) : (item?.sender?.img || item?.whomFriend?.img || item?.photoURL || item.avatar || avatar)}
-                                name={item.isFriend && item.whomFriend?.uid === auth.currentUser.uid ? (item?.friend?.name) : item.name || item?.whomFriend?.name || item.fullName || item?.sender?.name}
+                                img={item.isFriend && item.whomFriend?.uid === auth.currentUser.uid ? (item?.friend?.img) : (item?.sender?.img || item?.whomFriend?.img || item?.photoURL || item.avatar || item.groupInfo?.groupImg || avatar)}
+                                name={item.isFriend && item.whomFriend?.uid === auth.currentUser.uid ? (item?.friend?.name) : item.name || item?.whomFriend?.name || item.fullName || item?.sender?.name || item?.name || item?.groupInfo?.groupName || item?.name}
                                 message={item.message || item.email}
                                 time={item.time || moment(item.createdAt).fromNow() || "10:00 AM"}
                                 button={item.button || buttonData}

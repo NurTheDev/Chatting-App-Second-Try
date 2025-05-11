@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Searchbar from "../Common Component/Searchbar";
 import Section from "../Common Component/Section";
 import {getAuth} from "firebase/auth";
@@ -9,8 +9,10 @@ import {ScaleLoader} from "react-spinners";
 import {getDatabase, ref, set , push} from "firebase/database";
 import moment from "moment";
 import {Slide, toast} from "react-toastify";
+import {LoggedUserContext} from "../context/loggedUser.js";
 
 const Home = () => {
+    const LoggedUser = useContext(LoggedUserContext);
     const auth = getAuth();
     const [user, setUser] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
@@ -20,6 +22,7 @@ const Home = () => {
     const [requestID, setRequestID] = useState(null);
     const [uploadLoading, setUploadLoading] = useState(false);
     const [createGroup, setCreateGroup] = React.useState(false);
+    const [myGroup, setMyGroup] = useState([]);
     const [inputValue, setInputValue] = useState({
         groupName: "",
         groupTitle: "",
@@ -69,12 +72,12 @@ const Home = () => {
                     groupInfo :{
                         groupName: inputValue.groupName,
                         groupTitle: inputValue.groupTitle,
-                        groupImg : inputValue.groupImage,
+                        groupImg : data.secure_url,
                     },  adminInfo:{
-                        adminName: auth.currentUser.displayName,
-                        adminImg: auth.currentUser.photoURL,
-                        adminId: auth.currentUser.uid,
-                        adminEmail: auth.currentUser.email,
+                        adminName: auth.currentUser.displayName || LoggedUser?.fullName,
+                        adminImg: auth.currentUser.photoURL || LoggedUser?.photoURL,
+                        adminId: auth.currentUser.uid || LoggedUser?.uid,
+                        adminEmail: auth.currentUser.email || LoggedUser?.email,
                     },
                     createdAt: moment().toISOString(),
                 }).then(()=> {
@@ -151,7 +154,6 @@ const Home = () => {
                     ? friend.whomFriend?.uid
                     : friend.friend?.uid;
             });
-
             const filtered = user.filter(u => {
                 if (u.uid === auth.currentUser.uid) return false;
                 return !friendIds.includes(u.uid);
@@ -161,7 +163,17 @@ const Home = () => {
             setFilteredUsers(user.filter(u => u.uid !== auth.currentUser.uid));
         }
     }, [user, friendlist]);
-
+    useEffect(() => {
+        setLoading(true)
+        fetchData((myGroupData) => {
+            const filteredMyGroup = myGroupData.filter((group) => {
+                const userGroup = group.adminInfo.adminId === auth.currentUser.uid;
+                return userGroup ? group : null;
+            })
+            setMyGroup(filteredMyGroup);
+            setLoading(false);
+        }, "myGroup/");
+    }, []);
     return (
         <div className={"relative"}>
             {uploadLoading ? (<ScaleLoader
@@ -218,8 +230,10 @@ const Home = () => {
                     </>
                     <Section
                         title={" Group"}
-                        data={user}
+                        data={myGroup}
                         group={true}
+                        loadingState={loading}
+                        buttonData={"View"}
                         groupState={setCreateGroup}
                         className={
                             "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"

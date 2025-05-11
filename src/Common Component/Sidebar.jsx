@@ -6,7 +6,7 @@ import {getAuth, onAuthStateChanged, signOut} from "firebase/auth";
 import {Link, Outlet, useLocation, useNavigate} from "react-router-dom";
 import defultAvatar from "../assets/avatar.gif";
 import {getDatabase, onValue, ref, update} from "firebase/database";
-
+import {LoggedUserContext} from "../context/loggedUser.js";
 const navItems = [
     {id: 1, name: "Home", link: "/home", icon: <IoHomeOutline/>},
     {id: 2, name: "Messages", link: "/messages", icon: <MdOutlineMessage/>},
@@ -161,7 +161,9 @@ const Sidebar = () => {
             </div>
             <div className="col-span-1"></div>
             <div className="col-span-10">
-                <Outlet/>
+                <LoggedUserContext.Provider value={user}>
+                    <Outlet/>
+                </LoggedUserContext.Provider>
             </div>
         </div>
     );
