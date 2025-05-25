@@ -6,7 +6,6 @@ import App from "./App.jsx";
 import Database from "./Database/firebase.config.js";
 import store from "./Fetures/store.js";
 import { Provider } from "react-redux";
-
 import "./index.css";
 import { ToastContainer } from "react-toastify";
 createRoot(document.getElementById("root")).render(
