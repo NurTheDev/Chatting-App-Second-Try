@@ -11,6 +11,8 @@ import Webcam from "react-webcam";
 function ChatPage() {
   const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
   const [showWebcam, setShowWebcam] = React.useState(false);
+  const [messages, setMessages] = React.useState("");
+  // const [loading, setLoading] = React.useState(true);
 
   return (
     <div
@@ -71,6 +73,8 @@ function ChatPage() {
             <input
               type="text"
               placeholder="Type a message..."
+              value={messages}
+              onChange={(e) => setMessages(e.target.value)}
               className="flex-grow bg-[#f1f1f1] px-4 py-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <div
