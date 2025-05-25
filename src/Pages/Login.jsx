@@ -34,7 +34,7 @@ const Login = () => {
 
   const successLogin = (user) => {
       if (auth.currentUser.emailVerified){
-            navigate("/home");
+            navigate("/");
           toast.success(`${user.displayName} welcome to your account`, {
               position: "bottom-center",
               autoClose: 3000,

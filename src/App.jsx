@@ -15,8 +15,8 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/confirm-email" element={<ConfirmEmail />} />
-        <Route path="/" element={<Sidebar />}>
-          <Route path="/home" element={<Home />} />
+        <Route element={<Sidebar />}>
+          <Route path="/" element={<Home />} />
           <Route path="/messages" element={<ChatPage/>} />
           <Route path="/notifications" element={<h1>from notification</h1>} />
           <Route path="/settings" element={<h1><Settings/></h1>} />

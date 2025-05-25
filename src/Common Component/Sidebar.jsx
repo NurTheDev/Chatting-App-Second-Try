@@ -8,7 +8,7 @@ import defultAvatar from "../assets/avatar.gif";
 import {getDatabase, onValue, ref, update} from "firebase/database";
 import {LoggedUserContext} from "../context/loggedUser.js";
 const navItems = [
-    {id: 1, name: "Home", link: "/home", icon: <IoHomeOutline/>},
+    {id: 1, name: "Home", link: "/", icon: <IoHomeOutline/>},
     {id: 2, name: "Messages", link: "/messages", icon: <MdOutlineMessage/>},
     {
         id: 3,
