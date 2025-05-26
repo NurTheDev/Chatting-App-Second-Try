@@ -15,64 +15,51 @@ const Section = ({data, className, title, loadingState, buttonData, IDs, rejectB
     const handleClick = () => {
         groupState(true)
     }
-    return (
-        <div className="mt-8 px-5 rounded-[20px] bg-white shadow-lg w-full">
-            <div className="flexRowBetween">
-                <div className={"flex gap-x-4 font-semibold justify-center items-center"}>
-                    <h2 className="text-xl font-semibold font-poppins">{title}</h2>
-                    <span
-                        className={"font-poppins bg-primary-purple w-6 h-6 text-sm flex justify-center items-center text-white rounded-full"}>
+    return (<div className="mt-8 px-5 rounded-[20px] bg-white shadow-lg w-full">
+        <div className="flexRowBetween">
+            <div className={"flex gap-x-4 font-semibold justify-center items-center"}>
+                <h2 className="text-xl font-semibold font-poppins">{title}</h2>
+                <span
+                    className={"font-poppins bg-primary-purple w-6 h-6 text-sm flex justify-center items-center text-white rounded-full"}>
             {loadingState ? '0' : data.length}
           </span>
-                </div>
-                {group ? (<button onClick={handleClick} type="button"
-                                  className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center">
-                    Create group
-                    <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
-                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                              d="M1 5h12m0 0L9 1m4 4L9 9"/>
-                    </svg>
-                </button>) : (<span className="cursor-pointer text-xl">
+            </div>
+            {group ? (<button onClick={handleClick} type="button"
+                              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center">
+                Create group
+                <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                          d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                </svg>
+            </button>) : (<span className="cursor-pointer text-xl">
           <IoEllipsisVerticalSharp/>
         </span>)}
-            </div>
-            <div className={`mt-4 ${className}`}>
-                {loadingState ? (
-                    <div>
-                        {skeletonArray.map((_, index) => (
-                            <div key={index}>
-                                <Skeleton/>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    dataArray && dataArray.length > 0 ? (<div>
-                        {dataArray.map((item, index) => (
-                            <User
-                                key={item.id || index}
-                                uid={item.uid}
-                                IDs={IDs}
-                                rejectionBtn={rejectBtn}
-                                email={item.email}
-                                img={item.isFriend && item.whomFriend?.uid === auth.currentUser.uid ? (item?.friend?.img) : (item?.sender?.img || item?.whomFriend?.img || item?.photoURL || item.avatar || item.groupInfo?.groupImg || avatar)}
-                                name={item.isFriend && item.whomFriend?.uid === auth.currentUser.uid ? (item?.friend?.name) : item.name || item?.whomFriend?.name || item.fullName || item?.sender?.name || item?.name || item?.groupInfo?.groupName || item?.name}
-                                message={item.message || item.email}
-                                time={item.time || moment(item.createdAt).fromNow() || "10:00 AM"}
-                                button={item.button || buttonData}
-                                userData={item}
-                                className={
-                                    index === data.length - 1
-                                        ? "border-b-0"
-                                        : "border-b border-b-gray-medium-35"
-                                }
-                            />
-                        ))}
-                    </div>) : (<NoData/>)
-                )}
-            </div>
         </div>
-    );
+        <div className={`mt-4 ${className}`}>
+            {loadingState ? (<div>
+                {skeletonArray.map((_, index) => (<div key={index}>
+                    <Skeleton/>
+                </div>))}
+            </div>) : (dataArray && dataArray.length > 0 ? (<div>
+                {dataArray.map((item, index) => (
+                    <User
+                        key={item.id || index}
+                        uid={item.uid}
+                        IDs={IDs}
+                        rejectionBtn={rejectBtn}
+                        email={item.email}
+                        img={item.isFriend && item.whomFriend?.uid === auth.currentUser.uid ? (item?.friend?.img) : (item?.sender?.img || item?.whomFriend?.img || item?.photoURL || item.avatar || item.groupInfo?.groupImg || avatar)}
+                        name={item.isFriend && item.whomFriend?.uid === auth.currentUser.uid ? (item?.friend?.name) : item.name || item?.whomFriend?.name || item.fullName || item?.sender?.name || item?.name || item?.groupInfo?.groupName || item?.name}
+                        message={item.message || item.email}
+                        time={item.time || moment(item.createdAt).fromNow() || "10:00 AM"}
+                        button={item.button || buttonData}
+                        userData={item}
+                        className={index === data.length - 1 ? "border-b-0" : "border-b border-b-gray-medium-35"}
+                    />))}
+            </div>) : (<NoData/>))}
+        </div>
+    </div>);
 };
 
 Section.propTypes = {

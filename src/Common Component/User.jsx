@@ -5,8 +5,12 @@ import {getAuth} from "firebase/auth";
 import moment from "moment";
 import {Slide, toast} from "react-toastify";
 import fetchData from "../lib/helper.js";
-
+import {useDispatch, useSelector} from "react-redux";
+import {handleClickedUser} from "../Fetures/Slice/userData.js";
 const User = ({img, name, message, button, time, className, uid, email, rejectionBtn, userData}) => {
+    const dispatch = useDispatch();
+    const {value} = useSelector((state) => state.userData);
+    console.log("value", value);
     const auth = getAuth();
     const [activeUser, setActiveUser] = useState([]);
     const [buttonState, setButtonState] = React.useState(false);
@@ -107,7 +111,7 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                 });
             }).then(() => {
                 set(ref(db, 'Notification/' + data.uid), {
-                    notification : {
+                    notification: {
                         message3: `${activeUser[0]?.fullName || auth.currentUser.displayName} unfriended you`,
                     }
                 })
@@ -141,7 +145,7 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                     sentRequest: true,
                 }).then(() => {
                     set(ref(db, 'Notification/' + data.uid + auth.currentUser.uid), {
-                        notification : {
+                        notification: {
                             message: `${activeUser[0]?.fullName || auth.currentUser.displayName} sent you a friend request`,
                         }
                     }).then(() => {
@@ -180,8 +184,8 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
         }
     };
     return (
-        <div
-            className={`flex justify-between mx-5 items-center gap-4 font-poppins py-4 cursor-pointer hover:shadow-md ${className}`}
+        <div onClick={() => dispatch(handleClickedUser(userData))}
+             className={`flex justify-between mx-5 items-center gap-4 font-poppins py-4 cursor-pointer hover:shadow-md ${className}`}
         >
             <div className="flex gap-4 items-center">
                 <div>
