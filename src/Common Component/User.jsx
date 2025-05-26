@@ -5,12 +5,10 @@ import {getAuth} from "firebase/auth";
 import moment from "moment";
 import {Slide, toast} from "react-toastify";
 import fetchData from "../lib/helper.js";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {handleClickedUser} from "../Fetures/Slice/userData.js";
 const User = ({img, name, message, button, time, className, uid, email, rejectionBtn, userData}) => {
     const dispatch = useDispatch();
-    const {value} = useSelector((state) => state.userData);
-    console.log("value", value);
     const auth = getAuth();
     const [activeUser, setActiveUser] = useState([]);
     const [buttonState, setButtonState] = React.useState(false);
