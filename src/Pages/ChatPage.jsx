@@ -18,8 +18,9 @@ function ChatPage() {
     const {value} = useSelector((state) => state.userData);
     console.log(Object.keys(value).length)
     const auth = getAuth();
-
-
+    const handleEmojiClick = (emojiObject) => {
+        setMessages(messages + emojiObject.emoji);
+    };
     return (
         <div
             className={"grid grid-cols-3 justify-center items-center gap-x-5 w-full"}
@@ -99,7 +100,7 @@ function ChatPage() {
                             <span
                                 className={`absolute right-2 bottom-10 transition-all duration-200 ease-in-out transform ${showEmojiPicker ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
                             >
-                <EmojiPicker/>
+                <EmojiPicker onEmojiClick={handleEmojiClick}/>
               </span>
                             <span
                                 className={"cursor-pointer"}
