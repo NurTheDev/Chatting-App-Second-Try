@@ -19,7 +19,7 @@ function ChatPage() {
     console.log(Object.keys(value).length)
     const auth = getAuth();
     const handleEmojiClick = (emojiObject) => {
-        setMessages(messages + emojiObject.emoji);
+        setMessages((prevMessages) => prevMessages + emojiObject.emoji);
     };
     return (
         <div

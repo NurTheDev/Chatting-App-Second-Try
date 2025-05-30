@@ -7,7 +7,10 @@ import {Slide, toast} from "react-toastify";
 import fetchData from "../lib/helper.js";
 import {useDispatch} from "react-redux";
 import {handleClickedUser} from "../Fetures/Slice/userData.js";
+import {useNavigate} from "react-router-dom";
+
 const User = ({img, name, message, button, time, className, uid, email, rejectionBtn, userData}) => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const auth = getAuth();
     const [activeUser, setActiveUser] = useState([]);
@@ -215,7 +218,8 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                 {showMore && (
                     <div className={"relative"}>
                         <div
-                            className={"absolute right-0 -top-5 w-40 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-10 "}>
+                            className={"absolute right-0 -top-5 w-40 bg-white rounded-lg shadow-lg border" +
+                                " border-gray-200 p-2 z-10 "}>
                             <button
                                 onClick={() => setShowMore(false)}
                                 className="absolute top-1 right-1 flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
@@ -226,8 +230,9 @@ const User = ({img, name, message, button, time, className, uid, email, rejectio
                                 <li className={"hover:bg-gray-100 rounded px-3 py-2 transition-colors flex items-center"}>
                                     <i className="mr-2 text-sm">👤</i> View profile
                                 </li>
-                                <li className={"hover:bg-gray-100 rounded px-3 py-2 transition-colors flex items-center"}>
-                                    <i className="mr-2 text-sm">💬</i> Message
+                                <li className={"hover:bg-gray-100 rounded px-3 py-2 transition-colors flex" +
+                                    " items-center"} onClick={()=> navigate("/messages")}>
+                                    <i className="mr-2 text-sm" >💬</i> Message
                                 </li>
                                 <li className={"hover:bg-gray-100 rounded px-3 py-2 transition-colors flex items-center"}>
                                     <i className="mr-2 text-sm">🚫</i> Block
