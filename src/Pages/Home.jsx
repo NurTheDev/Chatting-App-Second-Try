@@ -10,7 +10,6 @@ import {getDatabase, ref, set , push} from "firebase/database";
 import moment from "moment";
 import {Slide, toast} from "react-toastify";
 import {LoggedUserContext} from "../context/loggedUser.js";
-
 const Home = () => {
     const LoggedUser = useContext(LoggedUserContext);
     const auth = getAuth();

@@ -1,5 +1,4 @@
-import React from "react";
-import {friendList} from "../lib/Data.js";
+import React, {useEffect, useState} from "react";
 import Section from "../Common Component/Section.jsx";
 import avatar from "../assets/avatar.gif";
 import {IoEllipsisVerticalSharp} from "react-icons/io5";
@@ -9,7 +8,7 @@ import EmojiPicker from "emoji-picker-react";
 import Webcam from "react-webcam";
 import {useSelector} from "react-redux";
 import {getAuth} from "firebase/auth";
-
+import fetchData from "../lib/helper.js";
 function ChatPage() {
     const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
     const [showWebcam, setShowWebcam] = React.useState(false);
@@ -21,6 +20,31 @@ function ChatPage() {
     const handleEmojiClick = (emojiObject) => {
         setMessages((prevMessages) => prevMessages + emojiObject.emoji);
     };
+    const [friendlist, setFriendlist] = useState([]);
+    const [myGroup, setMyGroup] = useState([]);
+    const [loading, setLoading] =useState(true);
+    useEffect(() => {
+        setLoading(true)
+        fetchData((friendlist) => {
+            const filteredFriendlist = friendlist.filter((friend) => {
+                const userFriend = friend.id.includes(auth.currentUser.uid);
+                return userFriend ? friend : null;
+            })
+            setFriendlist(filteredFriendlist);
+            setLoading(false);
+        }, "FriendList/");
+    }, []);
+    useEffect(() => {
+        setLoading(true)
+        fetchData((myGroupData) => {
+            const filteredMyGroup = myGroupData.filter((group) => {
+                const userGroup = group.adminInfo.adminId === auth.currentUser.uid;
+                return userGroup ? group : null;
+            })
+            setMyGroup(filteredMyGroup);
+            setLoading(false);
+        }, "myGroup/");
+    }, []);
     return (
         <div
             className={"grid grid-cols-3 justify-center items-center gap-x-5 w-full"}
@@ -28,14 +52,14 @@ function ChatPage() {
             <div>
                 <Section
                     title={" Group"}
-                    data={friendList}
+                    data={myGroup}
                     className={
                         "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
                     }
                 />
                 <Section
                     title={"Friends"}
-                    data={friendList}
+                    data={friendlist}
                     className={
                         "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
                     }
