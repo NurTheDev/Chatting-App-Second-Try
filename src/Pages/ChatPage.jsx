@@ -72,21 +72,37 @@ function ChatPage() {
     console.log(value)
 
     useEffect(() => {
+        // Don't proceed if auth.currentUser is not available
+        if (!auth.currentUser) return;
+
         fetchData((messages) => {
-            console.log("Fetched messages:", messages);
-           if (!messages || messages.length === 0) {
-               return
-           }
-            const filteredMessages = Object.values(messages).filter((message) => {
-                 return message.id.includes(auth.currentUser.uid)
-            })
-            setMessageList(filteredMessages);
+            if (!messages || messages.length === 0) {
+                setMessageList([]);
+                return;
+            }
+            try {
+                const otherUserId = value?.friend?.uid !== auth.currentUser.uid
+                    ? value?.friend?.uid
+                    : value?.whomFriend?.uid;
+                const filteredMessages = Object.values(messages).filter((message) => {
+                    return message.id.includes(auth.currentUser.uid) &&
+                        message.id.includes(otherUserId);
+                });
+                const sortedMessages = filteredMessages.sort((a, b) =>
+                    new Date(a.time) - new Date(b.time)
+                );
+                setMessageList(sortedMessages);
+            } catch (error) {
+                console.error("Error filtering messages:", error);
+                setMessageList([]);
+            }
         }, "messages/");
-    } , [value, auth.currentUser?.uid]);
+    }, [value, auth.currentUser?.uid]);
     const handleSendMessage=(e)=>{
         e.preventDefault()
         if (messages.text.trim() === "") {
              // Prevent sending empty messages
+            return
         }
         const receiverInfo = {
             uid: auth.currentUser.uid !== value?.friend?.uid ? value?.friend?.uid : value?.whomFriend?.uid || "",
@@ -171,26 +187,24 @@ function ChatPage() {
                     <div
                         className={"flex flex-col gap-y-4 mt-6 mx-12 h-[60vh] overflow-y-auto"}
                     >
-                        {value?.friend?.uid !== auth.currentUser.uid && (
-                            messageList.map((message, index) => (
-                                <div key ={index}>
-                                    <p className={"bg-red-500"}>hi</p>
+
+                        {messageList.map((message, index) => (
+                            <div key={index} className={`flex ${message.senderInfo.uid === auth.currentUser.uid ? "justify-end" : "justify-start"} items-start gap-x-4`}>
+                                {message.senderInfo.uid !== auth.currentUser.uid && (
+                                    <img src={message.senderInfo.img || avatar} alt="Sender Avatar" className="w-8 h-8 rounded-full object-cover"/>
+                                )}
+                                <div className={`flex flex-col max-w-[70%] ${message.senderInfo.uid === auth.currentUser.uid ? "items-end" : "items-start"}`}>
+                                    <div className={`p-3 rounded-lg ${message.senderInfo.uid === auth.currentUser.uid ? "bg-primary-purple text-white" : "bg-gray-200 text-gray-800"}`}>
+                                        <p>{message.text}</p>
+                                    </div>
+                                    <span className={`text-xs text-gray-500 mt-1`}>{moment(message.time).fromNow()}</span>
                                 </div>
-                                // <div key={index} className={`flex items-start gap-4 ${message.senderInfo.uid === auth.currentUser.uid ? "justify-end" : "justify-start"}`}>
-                                //     <div className={`flex flex-col ${message.senderInfo.uid === auth.currentUser.uid ? "items-end" : "items-start"}`}>
-                                //         <img src={message.senderInfo.img || avatar} alt="Avatar" className="w-8 h-8 rounded-full object-cover mb-2"/>
-                                //         <div className={`p-3 rounded-lg ${message.senderInfo.uid === auth.currentUser.uid ? "bg-primary-purple text-white" : "bg-gray-200 text-gray-800"}`}>
-                                //             <p>{message.text}</p>
-                                //             {message.image && <img src={message.image} alt="Message Attachment" className="mt-2 max-w-xs rounded-lg"/>}
-                                //             {message.video && <video src={message.video} controls className="mt-2 max-w-xs rounded-lg"/>}
-                                //             {message.audio && <audio src={message.audio} controls className="mt-2"/>}
-                                //             {message.file && <a href={message.file} download className="mt-2 text-blue-500 underline">Download File</a>}
-                                //         </div>
-                                //     </div>
-                                //     <span className="text-xs text-gray-500">{moment(message.time).fromNow()}</span>
-                                // </div>
-                            ))
-                        )}
+                                {message.senderInfo.uid === auth.currentUser.uid && (
+                                    <img src={message.senderInfo.img || avatar} alt="Sender Avatar" className="w-8 h-8 rounded-full object-cover"/>
+                                )}
+                            </div>
+                        ))}
+
                     </div>
                 ):( <div className="flex flex-col items-center justify-center h-[60vh] mx-12">
                     <div className="relative w-48 h-48 mb-6">
