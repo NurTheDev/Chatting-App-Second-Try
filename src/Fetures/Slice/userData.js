@@ -7,7 +7,9 @@ export const counterSlice = createSlice({
     },
     reducers: {
         handleClickedUser: (state, action) => {
-            state.value = action.payload;
+            if(Object.keys(action.payload).includes("isFriend")){
+                state.value = action.payload;
+            }
         }
     },
 });

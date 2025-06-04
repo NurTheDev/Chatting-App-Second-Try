@@ -9,13 +9,14 @@ import Webcam from "react-webcam";
 import {useSelector} from "react-redux";
 import {getAuth} from "firebase/auth";
 import fetchData from "../lib/helper.js";
+import Skeleton from "../Common Component/Skeleton.jsx";
 function ChatPage() {
     const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
     const [showWebcam, setShowWebcam] = React.useState(false);
     const [messages, setMessages] = React.useState("");
     // const [loading, setLoading] = React.useState(true);
     const {value} = useSelector((state) => state.userData);
-    console.log(Object.keys(value).length)
+    console.log(value)
     const auth = getAuth();
     const handleEmojiClick = (emojiObject) => {
         setMessages((prevMessages) => prevMessages + emojiObject.emoji);
@@ -50,20 +51,22 @@ function ChatPage() {
             className={"grid grid-cols-3 justify-center items-center gap-x-5 w-full"}
         >
             <div>
-                <Section
+                {loading ? (<Skeleton/>):(  <Section
                     title={" Group"}
                     data={myGroup}
                     className={
                         "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
                     }
-                />
-                <Section
-                    title={"Friends"}
-                    data={friendlist}
-                    className={
-                        "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
-                    }
-                />
+                />)}
+                {
+                    loading ? (<Skeleton/>):( <Section
+                        title={"Friends"}
+                        data={friendlist}
+                        className={
+                            "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-[38vh]"
+                        }
+                    />)
+                }
             </div>
             <div className={"col-span-2"}>
                 <div
@@ -80,7 +83,7 @@ function ChatPage() {
                             </picture>
                         </div>
                         <div>
-                            <h4 className={"text-2xl font-semibold font-poppins"}>Swathi </h4>
+                            <h4 className={"text-2xl font-semibold font-poppins"}>{Object.keys(value).length > 0 ? (value?.friend?.uid !== auth.currentUser.uid ? value?.friend.name : value?.whomFriend?.uid !== auth.currentUser.uid ? value?.whomFriend.name : "") : "User"} </h4>
                             <p>Online</p>
                         </div>
                     </div>
@@ -132,15 +135,6 @@ function ChatPage() {
                             >
                 <FaCamera/>
               </span>
-                            {showWebcam && (
-                                <div className="absolute bottom-[100%] right-0 shadow-lg">
-                                    <Webcam
-                                        audio={false}
-                                        screenshotFormat="image/jpeg"
-                                        className="rounded-md w-64 h-48"
-                                    />
-                                </div>
-                            )}
                         </div>
                         <button
                             type="submit"
