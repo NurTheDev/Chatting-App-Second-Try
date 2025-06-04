@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import Section from "../Common Component/Section.jsx";
 import avatar from "../assets/avatar.gif";
 import {IoEllipsisVerticalSharp} from "react-icons/io5";
@@ -11,6 +11,7 @@ import fetchData from "../lib/helper.js";
 import Skeleton from "../Common Component/Skeleton.jsx";
 import moment from "moment";
 import {getDatabase,ref, set} from "firebase/database";
+import {LoggedUserContext} from "../context/loggedUser.js";
 function ChatPage() {
     const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
     const [messages, setMessages] = React.useState({
@@ -44,6 +45,8 @@ function ChatPage() {
             };
         });
     };
+    const LoggedUser = useContext(LoggedUserContext);
+    console.log("LoggedUser:", LoggedUser);
     const [friendlist, setFriendlist] = useState([]);
     const [myGroup, setMyGroup] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -114,8 +117,8 @@ function ChatPage() {
             id: `${auth.currentUser.uid}-${receiverInfo.uid}-${Date.now()}`,
             senderInfo: {
                 uid: auth.currentUser.uid,
-                name: auth.currentUser.displayName || "Anonymous",
-                img: auth.currentUser.photoURL || avatar
+                name: LoggedUser.fullName || "Anonymous",
+                img: LoggedUser.photoURL || avatar
             },
             receiverInfo: receiverInfo,
         }
