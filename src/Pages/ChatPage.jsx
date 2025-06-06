@@ -12,11 +12,13 @@ import Skeleton from "../Common Component/Skeleton.jsx";
 import moment from "moment";
 import {getDatabase,ref, set} from "firebase/database";
 import {LoggedUserContext} from "../context/loggedUser.js";
+import {IoMdClose} from "react-icons/io";
 function ChatPage() {
     const [showEmojiPicker, setShowEmojiPicker] = React.useState(false);
+    const [imageModal, setImageModal] = React.useState(false);
     const [messages, setMessages] = React.useState({
         text: "",
-        image: null,
+        image: [],
         video: null,
         audio: null,
         file: null,
@@ -34,7 +36,6 @@ function ChatPage() {
         }
     });
     const [messageList, setMessageList] = React.useState([]);
-    // const [loading, setLoading] = React.useState(true);
     const {value} = useSelector((state) => state.userData);
     const auth = getAuth();
     const handleEmojiClick = (emojiObject) => {
@@ -46,10 +47,9 @@ function ChatPage() {
         });
     };
     const LoggedUser = useContext(LoggedUserContext);
-    console.log("LoggedUser:", LoggedUser);
     const [friendlist, setFriendlist] = useState([]);
     const [myGroup, setMyGroup] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     useEffect(() => {
         setLoading(true)
         fetchData((friendlist) => {
@@ -72,7 +72,6 @@ function ChatPage() {
             setLoading(false);
         }, "myGroup/");
     }, []);
-    console.log(value)
 
     useEffect(() => {
         // Don't proceed if auth.currentUser is not available
@@ -130,7 +129,7 @@ function ChatPage() {
                 console.log("Message sent successfully", newMessage);
                 setMessages({
                     text: "",
-                    image: null,
+                    image: [null],
                     video: null,
                     audio: null,
                     file: null,
@@ -148,9 +147,95 @@ function ChatPage() {
                 console.error("Error sending message:", error);
             });
     }
+    const handleUploadImage = async (e) => {
+        const files = e.target.files;
+        if(!files || files.length === 0) return;
+        let UploadedImages = [];
+        for(const file of files) {
+            const formData = new FormData();
+            formData.append("upload_preset", import.meta.env.VITE_CLOUDE_PRESET);
+            formData.append("file", file);
+            const cloudinaryURL = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDE_NAME}/image/upload`;
+            try {
+                const response = await fetch(cloudinaryURL, {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.secure_url){
+                    UploadedImages.push(data.secure_url);
+                }
+            } catch (error) {
+                console.error("Error uploading image:", error);
+                return;
+            }
+        }
+        if (UploadedImages.length > 0) {
+            setMessages((prevMessages) => ({
+                ...prevMessages,
+                image: [...prevMessages.image, ...UploadedImages],
+                text: "",
+                time: moment().toISOString(),
+                senderInfo: {
+                    uid: auth.currentUser.uid,
+                    name: LoggedUser.fullName || "Anonymous",
+                    img: LoggedUser.photoURL || avatar
+                },
+                receiverInfo: {
+                    uid: auth.currentUser.uid !== value?.friend?.uid ? value?.friend?.uid : value?.whomFriend?.uid || "",
+                    name: auth.currentUser.uid !== value?.friend?.uid ? value?.friend?.name : value?.whomFriend?.name || "User",
+                    img: auth.currentUser.uid !== value?.friend?.uid ? value?.friend?.img : value?.whomFriend?.img || avatar
+                },
+                id: `${auth.currentUser.uid}-${value?.friend?.uid}-${Date.now()}`,
+            }));
+        }
+        setImageModal(false);
+    }
+    console.log("messageList:", messages.image);
     return (<div
-        className={"grid grid-cols-3 justify-center items-center gap-x-5 w-full"}
+        className={"grid grid-cols-3 justify-center items-center gap-x-5 w-full relative"}
     >
+        {imageModal && (
+
+                    <div
+                        className="fixed top-0 left-0 w-full h-full bg-black-50 bg-opacity-50 flex justify-center items-center font-poppins">
+                        <div className="bg-white p-5 rounded-lg shadow-lg w-1/3">
+                            <div className={"flex justify-between items-center mb-4"}>
+                                <h2 className="text-xl font-semibold mb-4 ">Create Group</h2>
+                                <button onClick={() =>setImageModal(false)}>
+                                    <IoMdClose
+                                        className={"text-2xl text-primary-purple hover:rotate-90 transition duration-100 hover:scale-75 cursor-pointer hover:text-red-700"}/>
+                                </button>
+                            </div>
+
+                            {/* Add your group creation form here */}
+                            <div className="flex items-center justify-center w-full">
+                                <label htmlFor="dropzone-file"
+                                       className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <svg className="w-8 h-8 mb-4 text-gray-500"
+                                             aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                             viewBox="0 0 20 16">
+                                            <path stroke="currentColor" strokeLinecap="round"
+                                                  strokeLinejoin="round" strokeWidth="2"
+                                                  d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                        </svg>
+                                        <p className="mb-2 text-sm text-gray-500 "><span
+                                            className="font-semibold">Click to upload</span> or drag and drop</p>
+                                        <p className="text-xs text-gray-500">SVG, PNG, JPG or GIF</p>
+
+                                    </div>
+                                    <input
+                                        multiple onChange={(e)=> handleUploadImage(e)}
+                                        name="groupImage" id="dropzone-file"
+                                        type="file" className="hidden"/>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+        )}
         <div>
             {loading ? (<Skeleton/>) : (<Section
                 title={" Group"}
@@ -259,6 +344,7 @@ function ChatPage() {
               </span>
                         <span
                             className={"cursor-pointer"}
+                            onClick={()=>setImageModal(!imageModal) }
                         >
                 <FaCamera/>
               </span>

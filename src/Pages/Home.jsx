@@ -59,6 +59,7 @@ const Home = () => {
             formData.append("upload_preset", import.meta.env.VITE_CLOUDE_PRESET);
             formData.append("file", inputValue.groupImage);
             const cloudinaryURL = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDE_NAME}/image/upload`;
+
             // Add your API call here to submit the form data
             try {
                 const response = await fetch(cloudinaryURL, {
