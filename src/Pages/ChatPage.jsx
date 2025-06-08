@@ -103,7 +103,7 @@ function ChatPage() {
     }, [value, auth.currentUser?.uid]);
     const handleSendMessage=(e)=>{
         e.preventDefault()
-        if (messages.text.trim() === "") {
+        if (messages.text.trim() === "" && messages.image.length === 0 ) {
              // Prevent sending empty messages
             return
         }
@@ -289,9 +289,16 @@ function ChatPage() {
                                             <img src={message.senderInfo.img || avatar} alt="Sender Avatar" className="w-8 h-8 rounded-full object-cover"/>
                                         )}
                                         <div className={`flex flex-col max-w-[70%] ${message.senderInfo.uid === auth.currentUser.uid ? "items-end" : "items-start"}`}>
-                                            <div className={`p-3 rounded-lg ${message.senderInfo.uid === auth.currentUser.uid ? "bg-primary-purple text-white" : "bg-gray-200 text-gray-800"}`}>
-                                                <p>{message.text}</p>
+                                            { message.image.length > 0 && (
+                                            <div className={`flex gap-x-2 mb-2 ${message.senderInfo.uid === auth.currentUser.uid ? "justify-end" : "justify-start"}`}>
+                                                {message.image.map((image, index) => (
+                                                    <img key={index} src={image} alt="Message Image" className="w-24 h-24 rounded-lg object-cover"/>
+                                                ))}
                                             </div>
+                                        )}
+                                            { message.text && (
+                                                <p className={`p-3 rounded-lg ${message.senderInfo.uid === auth.currentUser.uid ? "bg-primary-purple text-white" : "bg-gray-200 text-gray-800"}`}>{message.text}</p>
+                                            )}
                                             <span className={`text-xs text-gray-500 mt-1`}>{moment(message.time).fromNow()}</span>
                                         </div>
                                         {message.senderInfo.uid === auth.currentUser.uid && (
@@ -355,7 +362,20 @@ function ChatPage() {
                                 >
                 <FaCamera/>
               </span>
+
                             </div>
+                            {messages.image.length >0 && (
+                                <div className ="flex absolute right-[10%] bottom-16 gap-x-2 overflow-x-auto bg-gray-200 p-2 rounded-lg shadow-lg">
+                                    {messages.image.map((image, index) => (
+                                        <img
+                                            key={index}
+                                            src={image}
+                                            alt={`Image ${index + 1}`}
+                                            className="w-10 h-10 rounded-full object-cover"
+                                        />
+                                    ))}
+                                </div>
+                            )}
                             <button
                                 type="submit"
                                 onClick={handleSendMessage}
